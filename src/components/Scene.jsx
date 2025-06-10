@@ -44,6 +44,20 @@ function Scene() {
       carRef.current.position.z = carState.current.position.z
       carRef.current.position.y = -1.5
       carRef.current.rotation.y = carState.current.rotation
+
+      // Increase the level of focus on the car by moving the camera closer and lowering the fov
+      camera.position.set(
+        carRef.current?.position.x + 8 || 8, // closer X
+        carRef.current?.position.y + 6 || 6,   // closer Y
+        carRef.current?.position.z + 17 || 17  // closer Z
+      )
+      camera.fov = 22 // lower fov for more focus (default was 7)
+      camera.updateProjectionMatrix()
+      camera.lookAt(
+        carRef.current.position.x,
+        carRef.current.position.y,
+        carRef.current.position.z
+      )
     }
   })
 
