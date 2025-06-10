@@ -2,7 +2,7 @@ import React from 'react'
 import { useFrame } from '@react-three/fiber'
 
 // This component does NOT render any mesh, but restricts the car's position
-function BoundaryWall({ carRef, carState, radius = 17.5 }) {
+function BoundaryWall({ carRef, carState, radius = 20 }) {
   useFrame(() => {
     if (carRef?.current && carState?.current) {
       const x = carRef.current.position.x
