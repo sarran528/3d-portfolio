@@ -9,19 +9,19 @@ function App() {
     <div className="app">
       <Canvas
         camera={{
-          position: [140,100,150],
-          fov: 25,
+          position: [140, 100, 130],
+          fov: 7,
           near: 0.1,
           far: 1000
         }}
       >
         <Suspense fallback={null}>
           <Scene />
-          <OrbitControls
+          {/* <OrbitControls
             target={[8, -1.5, 0]}
             minDistance={10}
             maxDistance={60}
-          />
+          /> */}
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1} />
         </Suspense>

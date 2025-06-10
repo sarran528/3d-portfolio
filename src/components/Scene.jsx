@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import Ground from './Ground'
 import Car from './Car'
@@ -17,7 +17,11 @@ function Scene() {
     position: { x: 0, z: 0 },
     rotation: 0,
   })
-  // const { camera } = useThree() // No need to use camera here
+  const { camera } = useThree()
+
+  useEffect(() => {
+    camera.lookAt(8, 0, 0) // Match the center of the plane
+  }, [])
 
   useFrame(() => {
     if (carRef.current) {
@@ -55,4 +59,4 @@ function Scene() {
   )
 }
 
-export default Scene 
+export default Scene
