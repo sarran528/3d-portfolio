@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 import { useGLTF } from '@react-three/drei';
-import { useFrame, extend, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const SPEED = 0.1;
-const TURN_SPEED = 0.02;
+const SPEED = 0.4;
+const TURN_SPEED = 0.1;
 
 const SkyGradient = () => {
   const material = new THREE.ShaderMaterial({
@@ -44,7 +44,12 @@ const SkyGradient = () => {
   );
 };
 
-const Car: React.FC = () => {
+interface CarProps {
+  fixedCameraRotation: THREE.Euler;
+  cameraOffset: THREE.Vector3;
+}
+
+const Car: React.FC<CarProps> = ({ fixedCameraRotation, cameraOffset }) => {
   const { scene } = useGLTF('/models/car.glb');
   const carRef = useRef<THREE.Group>(null);
   const keysRef = useRef<{
@@ -61,7 +66,8 @@ const Car: React.FC = () => {
 
   const { camera } = useThree();
 
-  // Keyboard event listeners
+  const targetCameraPosition = useRef(new THREE.Vector3());
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key in keysRef.current) {
@@ -84,13 +90,12 @@ const Car: React.FC = () => {
     };
   }, []);
 
-  // Frame loop to move the car and update camera
   useFrame(() => {
     if (!carRef.current) return;
 
     const car = carRef.current;
 
-    // Forward/Backward movement
+    // Car movement logic
     if (keysRef.current.ArrowUp) {
       const direction = new THREE.Vector3();
       car.getWorldDirection(direction);
@@ -103,7 +108,6 @@ const Car: React.FC = () => {
       car.position.addScaledVector(direction, -SPEED);
     }
 
-    // Turning
     if (keysRef.current.ArrowLeft) {
       car.rotation.y += TURN_SPEED;
     }
@@ -112,18 +116,17 @@ const Car: React.FC = () => {
       car.rotation.y -= TURN_SPEED;
     }
 
-    // Camera follow
-    const carPosition = car.position;
-    const cameraOffset = new THREE.Vector3(-9,6,18); // Offset from the car
+    // Camera follow logic for fixed-angle view
+    targetCameraPosition.current.set(
+      car.position.x + cameraOffset.x,
+      car.position.y + cameraOffset.y,
+      car.position.z + cameraOffset.z
+    );
 
-    // Apply car's rotation to the camera offset
-    cameraOffset.applyEuler(new THREE.Euler(0, car.rotation.y, 0));
-
-    camera.position.copy(carPosition).add(cameraOffset);
-    camera.lookAt(carPosition);
+    camera.position.lerp(targetCameraPosition.current, 0.1);
+    camera.rotation.copy(fixedCameraRotation); // Maintain fixed rotation
   });
 
-  // Setup car visuals
   useEffect(() => {
     if (scene && carRef.current) {
       scene.scale.set(150, 150, 150);
