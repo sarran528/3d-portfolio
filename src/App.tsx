@@ -15,17 +15,17 @@ function App() {
 
   // Define the fixed camera rotation for the Bugatti-like perspective, but steeper pitch
   const fixedCameraRotation = new THREE.Euler(
-    -Math.PI / 3, // More negative = more top-down (about -72 degrees)
-    Math.PI / 90,   // Yaw: slight side angle
+    -Math.PI / 2.9, // More negative = more top-down (about -72 degrees)
+    Math.PI / 40,   // Yaw: slight side angle
     0
   );
 
   // Define the fixed offset for the camera relative to the car's position in world space.
   // Increase Y height for more top-down.
   const cameraOffset = new THREE.Vector3(
-    10,   // X offset: To the right of the car
-    19,   // Y offset: Increased height for a slightly more top-down feel
-    12    // Z offset: Fairly far behind the car
+    3,   // X offset: To the right of the car
+    12,   // Y offset: Increased height for a slightly more top-down feel
+    8    // Z offset: Fairly far behind the car
   );
 
   return (

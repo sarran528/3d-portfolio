@@ -3,8 +3,8 @@ import { useGLTF } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const SPEED = 0.4;
-const TURN_SPEED = 0.1;
+const SPEED = 0.15;
+const TURN_SPEED = 0.015;
 
 const SkyGradient = () => {
   const material = new THREE.ShaderMaterial({
