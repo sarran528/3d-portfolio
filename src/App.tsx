@@ -8,26 +8,31 @@ import Track from './components/Track';
 import Floor from './components/Floor';
 import Car from './components/Car';
 import * as THREE from 'three';
+
+export interface PortfolioSection {
+  id: string;
+  title: string;
+  position: [number, number, number];
+}
+
 function App() {
   // ... (existing state and useEffect for keyboard events)
 
   // --- Adjust these values for the slightly more top-down Bugatti-like camera angle ---
 
-  // Define the fixed camera rotation for the Bugatti-like perspective, but steeper pitch
-  const fixedCameraRotation = new THREE.Euler(
-    -Math.PI / 2.9, // More negative = more top-down (about -72 degrees)
-    Math.PI / 40,   // Yaw: slight side angle
+const fixedCameraRotation = new THREE.Euler(
+    -Math.PI *8/ 33, // More negative = more top-down (about -72 degrees)
+    Math.PI*2 / 4349,   // Yaw: slight side angle
     0
   );
 
   // Define the fixed offset for the camera relative to the car's position in world space.
   // Increase Y height for more top-down.
   const cameraOffset = new THREE.Vector3(
-    3,   // X offset: To the right of the car
-    12,   // Y offset: Increased height for a slightly more top-down feel
-    8    // Z offset: Fairly far behind the car
+    2,   // X offset: To the right of the car
+    10,   // Y offset: Increased height for a slightly more top-down feel
+    11    // Z offset: Fairly far behind the car
   );
-
   return (
     <div
       className="w-full h-screen"
