@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect, useRef } from 'react'; // Import useRef
+import React, { Suspense, useState, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
 import { Environment, TransformControls } from '@react-three/drei';
@@ -14,29 +14,78 @@ export interface PortfolioSection {
   position: [number, number, number];
 }
 
-// Initial definition of waypoints. Now reduced to 1 point.
-const initialAutonomousPath: THREE.Vector3[] = [
-  new THREE.Vector3(0, 0, 0),    // Single start point
+// Your base track coordinates (11 points)
+const baseAutonomousPath: THREE.Vector3[] = [
+  new THREE.Vector3(0.00, 0.1, 0.00),    // Point 1 (Y updated to 0.1)
+  new THREE.Vector3(1.76, 0.1, 14.91),   // Point 2 (Y updated to 0.1)
+  new THREE.Vector3(20.58, 0.1, 14.78),  // Point 3 (Y updated to 0.1)
+  new THREE.Vector3(38.43, 0.1, 14.07),  // Point 4 (Y updated to 0.1, was 114.07, assuming typo)
+  new THREE.Vector3(43.74, 0.1, 23.56),  // Point 5 (Y updated to 0.1)
+  new THREE.Vector3(35.38, 0.1, 35.70),  // Point 6 (Y updated to 0.1)
+  new THREE.Vector3(22.83, 0.1, 34.45),  // Point 7 (Y updated to 0.1)
+  new THREE.Vector3(18.50, 0.1, 27.12),  // Point 8 (Y updated to 0.1)
+  new THREE.Vector3(20.33, 0.1, -24.77), // Point 9 (Y updated to 0.1)
+  new THREE.Vector3(10.50, 0.1, -30.12), // Point 10 (Y updated to 0.1)
+  new THREE.Vector3(-1.46, 0.1, -18.65),  // Point 11 (Y updated to 0.1)
 ];
 
+// Function to interpolate points for a smoother path
+const interpolatePath = (path: THREE.Vector3[], pointsPerSegment: number): THREE.Vector3[] => {
+  if (path.length < 1) return path;
+
+  const newPath: THREE.Vector3[] = [];
+  for (let i = 0; i < path.length; i++) { // Iterate through all points, including the last one for the loop
+    const p1 = path[i];
+    // For the last point, loop back to the first point
+    const p2 = path[(i + 1) % path.length]; // This handles looping back to the first point
+
+    newPath.push(p1); // Add the original point
+
+    // Only add interpolated points if it's not the last segment (looping back)
+    // This is generally for creating a smooth loop.
+    if (i < path.length) { // Ensure interpolation happens before the last segment if you want a perfect loop.
+                            // If it's a closed loop, the last segment connects to the first.
+      for (let j = 1; j <= pointsPerSegment; j++) {
+        const t = j / (pointsPerSegment + 1);
+        const interpolatedPoint = new THREE.Vector3(
+          p1.x + (p2.x - p1.x) * t,
+          p1.y + (p2.y - p1.y) * t,
+          p1.z + (p2.z - p1.z) * t
+        );
+        newPath.push(interpolatedPoint);
+      }
+    }
+  }
+  return newPath;
+};
+
+
+// Generate the initial waypoints by interpolating.
+// Adding 1 point between each original segment will result in 11 (original) + 11 (interpolated) = 22 points.
+// Note: If you want exactly 22 points including the start/end, adjust `pointsPerSegment` accordingly.
+// For 11 original points, there are 11 segments (if it's a loop). To get 22 points, you need 1 interpolated point per segment.
+const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
+
 // Threshold for waypoints (constant)
-const WAYPOINT_THRESHOLD = 15;
+// Keeping it at 5 as it was the last used value, you can adjust this if the car
+// skips too many points or gets stuck.
+const WAYPOINT_THRESHOLD = 5;
 
 function App() {
   const [drivingMode, setDrivingMode] = useState<'manual' | 'drive'>('manual');
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState(0);
-  const [waypoints, setWaypoints] = useState<THREE.Vector3[]>(initialAutonomousPath);
+  // Use the interpolated path for the waypoints state
+  const [waypoints, setWaypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
   const [currentCameraOffset, setCurrentCameraOffset] = useState(
     new THREE.Vector3(2, 10, 11)
   );
   // State to display waypoint coordinates (will be updated on drag end)
   const [displayedWaypointCoords, setDisplayedWaypointCoords] = useState<string | null>(null);
 
-  // Ref for the single waypoint mesh (needed by TransformControls)
-  const waypointMeshRef = useRef<THREE.Mesh>(null);
+  // Create refs for each waypoint mesh, stored in an array
+  const waypointMeshRefs = useRef<(THREE.Mesh | null)[]>([]);
   // Ref for the coordinate display div (for direct DOM manipulation during drag)
   const coordsDisplayRef = useRef<HTMLDivElement>(null);
-
 
   const fixedCameraRotation = new THREE.Euler(
     -Math.PI * 8 / 33,
@@ -48,10 +97,18 @@ function App() {
   const buttonPosition2: [number, number, number] = [30, 0.5, -10];
 
   useEffect(() => {
-    if (drivingMode === 'drive' && currentWaypointIndex !== 0) {
+    // When switching to 'drive' mode, reset to the first waypoint
+    if (drivingMode === 'drive') {
       setCurrentWaypointIndex(0);
     }
-  }, [drivingMode, currentWaypointIndex]);
+    // Set initial displayed coordinates when component mounts or waypoints change
+    if (waypoints.length > 0 && coordsDisplayRef.current) {
+        const initialCoords = waypoints[0];
+        const coordsString = `X: ${initialCoords.x.toFixed(2)}, Y: ${initialCoords.y.toFixed(2)}, Z: ${initialCoords.z.toFixed(2)}`;
+        setDisplayedWaypointCoords(coordsString);
+        coordsDisplayRef.current.innerText = `Waypoint Coords: ${coordsString}`;
+    }
+  }, [drivingMode, waypoints]); // Depend on drivingMode and waypoints for reset/initial display
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -79,21 +136,26 @@ function App() {
 
   // This function updates the displayed coordinates continuously during drag
   // It directly updates the DOM element to avoid React state re-renders during dragging.
-  const handleWaypointTransformChange = () => {
-    if (waypointMeshRef.current && coordsDisplayRef.current) {
-      const currentPosition = waypointMeshRef.current.position;
+  const handleWaypointTransformChange = (index: number) => {
+    // Use the ref for the specific waypoint being dragged
+    const currentMesh = waypointMeshRefs.current[index];
+    if (currentMesh && coordsDisplayRef.current) {
+      const currentPosition = currentMesh.position;
       const coordsString = `X: ${currentPosition.x.toFixed(2)}, Y: ${currentPosition.y.toFixed(2)}, Z: ${currentPosition.z.toFixed(2)}`;
       coordsDisplayRef.current.innerText = `Waypoint Coords: ${coordsString}`;
     }
   };
 
   // This function updates the actual waypoint state ONLY when the drag ends
-  const handleWaypointDragEnd = () => {
-    if (waypointMeshRef.current) {
-      const finalPosition = waypointMeshRef.current.position;
+  const handleWaypointDragEnd = (index: number) => {
+    // Use the ref for the specific waypoint that was dragged
+    const finalMesh = waypointMeshRefs.current[index];
+    if (finalMesh) {
+      const finalPosition = finalMesh.position;
       setWaypoints((prevWaypoints) => {
         const updatedWaypoints = [...prevWaypoints];
-        updatedWaypoints[0] = new THREE.Vector3(finalPosition.x, 0, finalPosition.z); // Explicitly set Y to 0
+        // Waypoints should stay at the track's Y-level
+        updatedWaypoints[index] = new THREE.Vector3(finalPosition.x, 0.1, finalPosition.z);
         return updatedWaypoints;
       });
       // Also update the React state for displayed coords, in case it's used elsewhere
@@ -166,17 +228,17 @@ function App() {
             }}
           />
 
-          {/* Visual debug sphere for the single waypoint with TransformControls */}
+          {/* Visual debug spheres for waypoints with TransformControls */}
           {waypoints.map((wp, index) => (
             <TransformControls
               key={index}
               mode="translate"
               axis="xz"
-              object={waypointMeshRef} // Controls this specific mesh
-              onObjectChange={handleWaypointTransformChange} // Update display continuously
-              onDragEnd={handleWaypointDragEnd} // Update state only on drag end
+              object={waypointMeshRefs.current[index]}
+              onObjectChange={() => handleWaypointTransformChange(index)} // Pass index to handler
+              onDragEnd={() => handleWaypointDragEnd(index)} // Pass index to handler
             >
-              <mesh ref={waypointMeshRef} position={wp}>
+              <mesh ref={(el) => (waypointMeshRefs.current[index] = el)} position={wp}>
                 <sphereGeometry args={[WAYPOINT_THRESHOLD / 2, 16, 16]} />
                 <meshBasicMaterial
                   color={index === currentWaypointIndex ? 'red' : 'blue'}
@@ -208,7 +270,7 @@ function App() {
       </Canvas>
 
       {/* Coordinate Displayer UI */}
-      <div ref={coordsDisplayRef} style={{ // Assign the ref here
+      <div ref={coordsDisplayRef} style={{
         position: 'fixed',
         bottom: '10px',
         left: '10px',
@@ -220,7 +282,7 @@ function App() {
         fontFamily: 'monospace',
         fontSize: '14px'
       }}>
-        Drag waypoint to see coords
+        {displayedWaypointCoords ? `Waypoint Coords: ${displayedWaypointCoords}` : 'Drag waypoint to see coords'}
       </div>
     </div>
   );
