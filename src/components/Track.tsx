@@ -42,7 +42,7 @@ const Track: React.FC = () => {
   // Add physics to the track using trimeshL
   const [ref] = useTrimesh(() => ({
     mass: 0, // Static object
-    position: [0, 0.1, 0], // Changed from [0, 0.1, 0] to ground level
+    position: [-1, 0.1, 0], // Changed from [0, 0.1, 0] to ground level
     args: [vertices, indices],
     material: {
       friction: 0.8,
@@ -55,7 +55,7 @@ const Track: React.FC = () => {
     if (scene) {
       console.log('Track GLB scene loaded:', scene);
       scene.position.set(0, 0.1, 0); // Changed from [0, 0.1, 0] to ground level
-      scene.scale.set(35, 35, 35);
+      scene.scale.set(36, 36,36); // Scale the track to fit the scene
       
       scene.traverse((child) => {
         if (child instanceof THREE.Mesh) {

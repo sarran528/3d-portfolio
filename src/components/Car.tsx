@@ -5,8 +5,8 @@ import * as THREE from 'three';
 
 const SPEED = 0.15;
 const TURN_SPEED = 0.015;
-const AUTONOMOUS_SPEED = 0.061; // Slightly reduced for better control
-const AUTONOMOUS_TURN_SPEED = 0.05; // Increased for better turning
+const AUTONOMOUS_SPEED = 0.15; // Slightly reduced for better control
+const AUTONOMOUS_TURN_SPEED = 0.015; // Increased for better turning
 
 interface CarProps {
   fixedCameraRotation: THREE.Euler;
