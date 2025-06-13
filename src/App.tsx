@@ -1,12 +1,14 @@
 import React, { Suspense, useState, useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
-import { Environment } from '@react-three/drei'; // Removed TransformControls
+import { Environment, OrbitControls } from '@react-three/drei'; // Added OrbitControls
 import Track from './components/Track';
 import Floor from './components/Floor';
 import Car from './components/Car';
 import RainbowButton from './components/RainbowButton';
 import Walls from './components/Walls'; // Import Walls component
+import CityArch from './components/CityArch';
+import CityNameBoard from './components/CityNameBoard';
 import * as THREE from 'three';
 
 export interface PortfolioSection {
@@ -213,6 +215,8 @@ function App() {
           />
 
           <Walls /> {/* Add Walls component here */}
+          <CityArch name="Welcome to 3D City" position={[0, 0, 0]} /> {/* Add CityArch component */}
+          <CityNameBoard name="CANNES" position={[0, 0, 20]} /> {/* Add CityNameBoard component */}
 
           {/* Removed TransformControls and waypointMeshRefs as waypoints are no longer draggable */}
           {/* Visual debug spheres for waypoints */}
@@ -245,6 +249,7 @@ function App() {
           intensity={0.5}
           color="#ff9d4d"
         />
+        <OrbitControls /> {/* Added OrbitControls for camera control */}
       </Canvas>
     </div>
   );
