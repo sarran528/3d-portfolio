@@ -7,8 +7,8 @@ import Floor from './components/Floor';
 import Car from './components/Car';
 import RainbowButton from './components/RainbowButton';
 import Walls from './components/Walls'; // Import Walls component
-import CityArch from './components/CityArch';
-import CityNameBoard from './components/CityNameBoard';
+// import CityArch from './components/CityArch';
+// import CityNameBoard from './components/CityNameBoard';
 import * as THREE from 'three';
 
 export interface PortfolioSection {
@@ -215,8 +215,8 @@ function App() {
           />
 
           <Walls /> {/* Add Walls component here */}
-          <CityArch name="Welcome to 3D City" position={[0, 0, 0]} /> {/* Add CityArch component */}
-          <CityNameBoard name="CANNES" position={[0, 0, 20]} /> {/* Add CityNameBoard component */}
+          {/* <CityArch  /> 
+          <CityNameBoard name="SARRAN" position={[-8, 0, 13]} /> Add CityNameBoard component */}
 
           {/* Removed TransformControls and waypointMeshRefs as waypoints are no longer draggable */}
           {/* Visual debug spheres for waypoints */}
