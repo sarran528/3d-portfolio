@@ -6,6 +6,7 @@ import Track from './components/Track';
 import Floor from './components/Floor';
 import Car from './components/Car';
 import RainbowButton from './components/RainbowButton';
+import Walls from './components/Walls'; // Import Walls component
 import * as THREE from 'three';
 
 export interface PortfolioSection {
@@ -210,6 +211,8 @@ function App() {
               console.log('Switched to Drive Mode');
             }}
           />
+
+          <Walls /> {/* Add Walls component here */}
 
           {/* Removed TransformControls and waypointMeshRefs as waypoints are no longer draggable */}
           {/* Visual debug spheres for waypoints */}

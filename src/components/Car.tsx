@@ -177,6 +177,18 @@ const Car: React.FC<CarProps> = ({
 
     camera.position.lerp(targetCameraPosition.current, 0.1);
     camera.rotation.copy(fixedCameraRotation);
+
+    // Wall collision detection and response
+    const carHalfWidth = 2.5; // Adjust based on your car model's scale
+    const carHalfLength = 5; // Adjust based on your car model's scale
+
+    const WALL_MIN_X = -75;
+    const WALL_MAX_X = 75;
+    const WALL_MIN_Z = -40;
+    const WALL_MAX_Z = 40;
+
+    car.position.x = Math.max(WALL_MIN_X + carHalfWidth, Math.min(WALL_MAX_X - carHalfWidth, car.position.x));
+    car.position.z = Math.max(WALL_MIN_Z + carHalfLength, Math.min(WALL_MAX_Z - carHalfLength, car.position.z));
   });
 
   useEffect(() => {
@@ -206,7 +218,12 @@ const Car: React.FC<CarProps> = ({
     }
   }, [scene]);
 
-  return <group ref={carRef} />;
+  return (
+    <group ref={carRef}>
+      {/* Example car size: width 2, height 1, length 4 */}
+      
+    </group>
+  );
 };
 
 export default Car;

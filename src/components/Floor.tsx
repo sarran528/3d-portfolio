@@ -16,7 +16,7 @@ const Floor: React.FC = () => {
 
   return (
     <mesh ref={ref as any} receiveShadow>
-      <boxGeometry args={[100, 1, 100]} />
+      <boxGeometry args={[150, 1, 80]} />
       <meshStandardMaterial 
         color="#303030"
         metalness={0.1}
