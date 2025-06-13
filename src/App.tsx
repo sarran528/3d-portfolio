@@ -137,6 +137,31 @@ function App() {
         zIndex: -1,
       }}
     >
+      {/* OUTSIDE CANVAS: HTML Manual Button */}
+      <button
+        style={{
+          position: 'absolute',
+          top: 32,
+          left: 32,
+          zIndex: 100,
+          padding: '16px 32px',
+          borderRadius: '8px',
+          border: 'none',
+          background: 'linear-gradient(90deg, #ff5e3a, #ff9d4d, #74c0fc)',
+          color: '#fff',
+          fontWeight: 'bold',
+          fontSize: '1.2rem',
+          cursor: 'pointer',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+        }}
+        onClick={() => {
+          setDrivingMode('manual');
+          console.log('Switched to Manual Driving Mode');
+        }}
+      >
+        Manual
+      </button>
+
       <Canvas
         shadows
         camera={{
@@ -167,14 +192,14 @@ function App() {
           />
 
           {/* Manual Button */}
-          <RainbowButton
+          {/* <RainbowButton
             position={buttonPosition1}
-            text="Manual"
+            text="Drive"
             onClick={() => {
-              setDrivingMode('manual');
-              console.log('Switched to Manual Driving Mode');
+              setDrivingMode('drive');
+              console.log('Switched to Drive Mode');
             }}
-          />
+          /> */}
 
           {/* Drive Button */}
           <RainbowButton
@@ -218,9 +243,6 @@ function App() {
           color="#ff9d4d"
         />
       </Canvas>
-
-      {/* Removed Coordinate Displayer UI */}
-      {/* <div ref={coordsDisplayRef} style={{ ... }}> ... </div> */}
     </div>
   );
 }
