@@ -8,7 +8,7 @@ import {
   Code,
   Mail
 } from 'lucide-react';
-import { PortfolioSection } from '../App';
+import { PortfolioSection } from '../../App';
 
 interface PortfolioOverlayProps {
   currentSection: PortfolioSection | null;
