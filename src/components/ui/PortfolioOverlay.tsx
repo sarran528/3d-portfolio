@@ -8,7 +8,16 @@ import {
   Code,
   Mail
 } from 'lucide-react';
-import { PortfolioSection } from '../../App';
+// Define the PortfolioSection type here or import it as a type from the correct file
+// Example definition (replace with your actual structure):
+export interface PortfolioSection {
+  id: string;
+  title: string;
+  description: string;
+  content: React.ReactNode;
+}
+// If you already have this type defined elsewhere, import it as:
+// import type { PortfolioSection } from '../../App';
 
 interface PortfolioOverlayProps {
   currentSection: PortfolioSection | null;

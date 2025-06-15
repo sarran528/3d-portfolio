@@ -18,7 +18,12 @@ const useVehicleControls = (carRef: React.RefObject<THREE.Group>) => {
     ArrowDown: boolean;
     ArrowLeft: boolean;
     ArrowRight: boolean;
-  }>({\n    ArrowUp: false,\n    ArrowDown: false,\n    ArrowLeft: false,\n    ArrowRight: false,\n  });
+  }>({
+    ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false,
+  });
 
   // Use a ref to track the previous state of drivingMode
   const prevDrivingModeRef = useRef(drivingMode);

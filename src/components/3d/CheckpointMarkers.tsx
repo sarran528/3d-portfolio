@@ -1,5 +1,10 @@
 import React from 'react';
-import { PortfolioSection } from '../../App';
+
+export interface PortfolioSection {
+  id: string;
+  title: string;
+  // Add other fields as needed
+}
 
 interface CheckpointMarkersProps {
   sections: PortfolioSection[];

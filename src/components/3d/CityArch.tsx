@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
-import { Text } from '@react-three/drei';
 
 const ARCH_HEIGHT = 8;
 const ARCH_WIDTH = 12;
