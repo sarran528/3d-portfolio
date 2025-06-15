@@ -1,13 +1,4 @@
-import React, { Suspense, useState, useEffect, useReimport React, { Suspense, useState, useEffect, useRef, useMemo, useCallback } from 'react'; // Keep Suspense, remove others if not used elsewhere
-import Track from './components/3d/Track';
-import Floor from './components/3d/Floor';
-import Car from './components/3d/Car';
-import RainbowButton from './components/ui/RainbowButton';
-import Walls from './components/3d/Walls'; // Import Walls component
-import CityArch from './components/3d/CityArch';
-import CityNameBoard from './components/3d/CityNameBoard';
-import * as THREE from 'three'; // Keep if THREE is used for other purposes, otherwise remove
-f, useMemo, useCallback } from 'react';
+import React, { Suspense, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
 import { Environment, OrbitControls } from '@react-three/drei'; // Added OrbitControls
