@@ -2,7 +2,6 @@ import React, { Suspense, useState, useEffect, useRef, useMemo, useCallback } fr
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
 import { Environment, OrbitControls } from '@react-three/drei'; // Added OrbitControls
-<<<<<<< HEAD
 import Track from './components/3d/Track';
 import Floor from './components/3d/Floor';
 import Car from './components/3d/Car';
@@ -11,21 +10,6 @@ import Walls from './components/3d/Walls'; // Import Walls component
 import CityArch from './components/3d/CityArch';
 import CityNameBoard from './components/3d/CityNameBoard';
 import * as THREE from 'three';
-=======
-import * as THREE from 'three'; // Make sure THREE is imported
-import { AppContextProvider, useAppContext } from './context/AppContext'; // Import context provider and hook
-
-// Lazy load components that load heavy assets
-const LazyCar = React.lazy(() => import('./components/vehicles/Car'));
-const LazyTrack = React.lazy(() => import('./components/scene/Track'));
-const LazyCityArch = React.lazy(() => import('./components/environment/CityArch'));
-
-import Floor from './components/scene/Floor';
-import Walls from './components/scene/Walls';
-import RainbowButton from './components/ui/RainbowButton';
-import CityNameBoard from './components/ui/CityNameBoard';
-import LoadingScreen from './components/ui/LoadingScreen'; // Assuming you want to use the loading screen as fallback
->>>>>>> 6772a69 (structured and optimized)
 
 
 // Your base track coordinates (11 points)
@@ -115,15 +99,11 @@ const WaypointMarker = React.memo(({ position, isCurrent }: { position: THREE.Ve
 ));
 
 function App() {
-<<<<<<< HEAD
   const [drivingMode, setDrivingMode] = useState<'manual' | 'drive'>('manual');
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState(0);
   const [waypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
   const [currentCameraOffset, setCurrentCameraOffset] = useState(
     new THREE.Vector3(2, 10, 11)
-=======
-  const { drivingMode, setDrivingMode, currentWaypointIndex, setCurrentWaypointIndex, waypoints, currentCameraOffset, setCurrentCameraOffset } = useAppContext(
->>>>>>> 6772a69 (structured and optimized)
   );
 
   const waypointMeshRefs = useRef<(THREE.Mesh | null)[]>([]);
@@ -199,50 +179,8 @@ function App() {
   }), []);
 
   return (
-<<<<<<< HEAD
     <div className="w-full h-screen" style={backgroundStyle}>
       <ManualButton onClick={handleManualMode} />
-=======
-    <div
-      className="w-full h-screen"
-      style={{
-        background: 'linear-gradient(135deg,rgb(20, 135, 184) 0%,rgb(48, 154, 224) 20%, #74c0fc 40%,rgb(228, 197, 151) 60%, #ff5e3a 100%)',
-        backgroundSize: 'cover',
-        backgroundAttachment: 'fixed',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: -1,
-      }}
-    >
-    <Suspense fallback={<LoadingScreen />}>
-      {/* OUTSIDE CANVAS: HTML Manual Button */}
-      <button
-        style={{
-          position: 'absolute',
-          top: 32,
-          left: 32,
-          zIndex: 100,
-          padding: '16px 32px',
-          borderRadius: '8px',
-          border: 'none',
-          background: 'linear-gradient(90deg, #ff5e3a, #ff9d4d, #74c0fc)',
-          color: '#fff',
-          fontWeight: 'bold',
-          fontSize: '1.2rem',
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-        }}
-        onClick={() => {
-          setDrivingMode('manual');
-          console.log('Switched to Manual Driving Mode');
-        }}
-      >
-        Manual
-      </button>
->>>>>>> 6772a69 (structured and optimized)
 
       <Canvas
         shadows
@@ -261,7 +199,6 @@ function App() {
       >
         <Environment preset="sunset" />
         <Physics gravity={[0, -9.82, 0]}>
-<<<<<<< HEAD
           <Floor />
           <Track />
           <Car
@@ -273,29 +210,6 @@ function App() {
             setCurrentWaypointIndex={setCurrentWaypointIndex}
             WAYPOINT_THRESHOLD={WAYPOINT_THRESHOLD}
           />
-=======
-          {/* Static components */}
-          <Floor /> {/* Assuming Floor is not heavy */}
-          <Walls /> {/* Assuming Walls is not heavy */}
-          <CityNameBoard name="CANNES" position={[0, 0, 20]} /> {/* Assuming CityNameBoard is not heavy */}
-
-          {/* Lazy loaded components wrapped in Suspense */}
-          <Suspense fallback={null}> {/* Add a fallback component */}
-            <Track /> {/* Assuming Track is heavy due to GLB */}
-          </Suspense>
-
-          <Suspense fallback={null}> {/* Add a fallback component */}
-            <LazyCar
-              fixedCameraRotation={fixedCameraRotation}
-              cameraOffset={currentCameraOffset}
-              isManualModeEnabled={drivingMode === 'manual'}
-              autonomousPath={waypoints} // Pass the state variable 'waypoints'
-              currentWaypointIndex={currentWaypointIndex}
-              setCurrentWaypointIndex={setCurrentWaypointIndex}
-              WAYPOINT_THRESHOLD={WAYPOINT_THRESHOLD}
-            />
-          </Suspense>
->>>>>>> 6772a69 (structured and optimized)
 
           <RainbowButton
             position={buttonPosition2}
@@ -303,15 +217,9 @@ function App() {
             onClick={handleDriveMode}
           />
 
-<<<<<<< HEAD
           <Walls />
           <CityArch />
           <CityNameBoard name="SARRAN" position={[-8, 0, 13]} />
-=======
-          <Suspense fallback={null}> {/* Add a fallback component */}
-             <CityArch name="Welcome to 3D City" position={[0, 0, 0]} /> {/* Add CityArch component */}
-          </Suspense>
->>>>>>> 6772a69 (structured and optimized)
 
           {waypoints.map((wp, index) => (
             <WaypointMarker
