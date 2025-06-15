@@ -10,7 +10,7 @@ import Walls from './components/3d/Walls'; // Import Walls component
 import CityArch from './components/3d/CityArch';
 import CityNameBoard from './components/3d/CityNameBoard';
 import * as THREE from 'three';
-
+import { interpolatePath } from './components/helpers/interpolatePath';
 
 // Your base track coordinates (11 points)
 const baseAutonomousPath: THREE.Vector3[] = [
@@ -26,34 +26,6 @@ const baseAutonomousPath: THREE.Vector3[] = [
   new THREE.Vector3(10.50, 0.1, -27), // Point 10 (Y updated to 0.1)
   new THREE.Vector3(-1.46, 0.1, -18.65),   // Point 11 (Y updated to 0.1)
 ];
-
-// Function to interpolate points for a smoother path
-const interpolatePath = (path: THREE.Vector3[], pointsPerSegment: number): THREE.Vector3[] => {
-  if (path.length < 1) return path;
-
-  const newPath: THREE.Vector3[] = [];
-  for (let i = 0; i < path.length; i++) {
-    const p1 = path[i];
-    const p2 = path[(i + 1) % path.length]; // This handles looping back to the first point
-
-    newPath.push(p1); // Add the original point
-
-    // Add interpolated points for smooth transitions
-    if (i < path.length) {
-      for (let j = 1; j <= pointsPerSegment; j++) {
-        const t = j / (pointsPerSegment + 1);
-        const interpolatedPoint = new THREE.Vector3(
-          p1.x + (p2.x - p1.x) * t,
-          p1.y + (p2.y - p1.y) * t,
-          p1.z + (p2.z - p1.z) * t
-        );
-        newPath.push(interpolatedPoint);
-      }
-    }
-  }
-  return newPath;
-};
-
 
 // Generate the initial waypoints by interpolating (1 point in between each base segment).
 const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
