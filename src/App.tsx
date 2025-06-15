@@ -1,14 +1,14 @@
-import React, { Suspense, useState, useEffect, useRef } from 'react';
+import React, { Suspense, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
 import { Environment, OrbitControls } from '@react-three/drei'; // Added OrbitControls
-import Track from './components/Track';
-import Floor from './components/Floor';
-import Car from './components/Car';
-import RainbowButton from './components/RainbowButton';
-import Walls from './components/Walls'; // Import Walls component
-// import CityArch from './components/CityArch';
-// import CityNameBoard from './components/CityNameBoard';
+import Track from './components/3d/Track';
+import Floor from './components/3d/Floor';
+import Car from './components/3d/Car';
+import RainbowButton from './components/ui/RainbowButton';
+import Walls from './components/3d/Walls'; // Import Walls component
+import CityArch from './components/3d/CityArch';
+import CityNameBoard from './components/3d/CityNameBoard';
 import * as THREE from 'three';
 
 export interface PortfolioSection {
@@ -67,103 +67,125 @@ const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1)
 // to a waypoint before moving to the next one.
 const WAYPOINT_THRESHOLD = 5;
 
+// Extract the ManualButton component
+const ManualButton = React.memo(({ onClick }: { onClick: () => void }) => (
+  <button
+    style={{
+      position: 'absolute',
+      top: 32,
+      left: 32,
+      zIndex: 100,
+      padding: '16px 32px',
+      borderRadius: '8px',
+      border: 'none',
+      background: 'linear-gradient(90deg, #ff5e3a, #ff9d4d, #74c0fc)',
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: '1.2rem',
+      cursor: 'pointer',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+    }}
+    onClick={onClick}
+  >
+    Manual
+  </button>
+));
+
+// Extract the WaypointMarker component
+const WaypointMarker = React.memo(({ position, isCurrent }: { position: THREE.Vector3, isCurrent: boolean }) => (
+  <mesh position={position}>
+    <sphereGeometry args={[WAYPOINT_THRESHOLD / 2, 16, 16]} />
+    <meshBasicMaterial
+      color={isCurrent ? 'red' : 'blue'}
+      transparent
+      opacity={0}
+    />
+  </mesh>
+));
+
 function App() {
   const [drivingMode, setDrivingMode] = useState<'manual' | 'drive'>('manual');
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState(0);
-  // Use the interpolated path for the waypoints state
-  const [waypoints, setWaypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
+  const [waypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
   const [currentCameraOffset, setCurrentCameraOffset] = useState(
     new THREE.Vector3(2, 10, 11)
   );
 
-  // Removed refs related to waypoint dragging and coordinate display
-  // const waypointMeshRefs = useRef<(THREE.Mesh | null)[]>([]);
-  // const coordsDisplayRef = useRef<HTMLDivElement>(null);
+  const waypointMeshRefs = useRef<(THREE.Mesh | null)[]>([]);
+  const coordsDisplayRef = useRef<HTMLDivElement>(null);
 
-
-  const fixedCameraRotation = new THREE.Euler(
+  // Memoize fixed values
+  const fixedCameraRotation = useMemo(() => new THREE.Euler(
     -Math.PI * 8 / 33,
     Math.PI * 2 / 4349,
     0
-  );
+  ), []);
 
-  const buttonPosition1: [number, number, number] = [30, 2.5, -10];
-  const buttonPosition2: [number, number, number] = [30, 0.5, -10];
+  const buttonPosition1 = useMemo(() => [30, 2.5, -10] as [number, number, number], []);
+  const buttonPosition2 = useMemo(() => [30, 0.5, -10] as [number, number, number], []);
+
+  // Memoize handlers
+  const handleManualMode = useCallback(() => {
+    setDrivingMode('manual');
+    console.log('Switched to Manual Driving Mode');
+  }, []);
+
+  const handleDriveMode = useCallback(() => {
+    setDrivingMode('drive');
+    console.log('Switched to Drive Mode');
+  }, []);
+
+  // Memoize camera offset update
+  const updateCameraOffset = useCallback((zoomDistanceFactor: number, isZoomIn: boolean) => {
+    setCurrentCameraOffset((prevOffset) => {
+      const newOffset = prevOffset.clone();
+      if (isZoomIn) {
+        newOffset.z = Math.max(5, newOffset.z - zoomDistanceFactor * 2);
+        newOffset.y = Math.max(5, newOffset.y - zoomDistanceFactor);
+      } else {
+        newOffset.z = Math.min(30, newOffset.z + zoomDistanceFactor * 2);
+        newOffset.y = Math.min(20, newOffset.y + zoomDistanceFactor);
+      }
+      return newOffset;
+    });
+  }, []);
 
   useEffect(() => {
-    // When switching to 'drive' mode, reset to the first waypoint
     if (drivingMode === 'drive') {
       setCurrentWaypointIndex(0);
     }
-    // Removed initial coordinate display update, as the display div is removed
-  }, [drivingMode, waypoints]); // Depend on drivingMode and waypoints for reset/initial display
+  }, [drivingMode]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const zoomDistanceFactor = 0.5;
-
-      setCurrentCameraOffset((prevOffset) => {
-        const newOffset = prevOffset.clone();
-        if (event.key === 'k' || event.key === 'K') {
-          newOffset.z = Math.max(5, newOffset.z - zoomDistanceFactor * 2);
-          newOffset.y = Math.max(5, newOffset.y - zoomDistanceFactor);
-        } else if (event.key === 'j' || event.key === 'J') {
-          newOffset.z = Math.min(30, newOffset.z + zoomDistanceFactor * 2);
-          newOffset.y = Math.min(20, newOffset.y + zoomDistanceFactor);
-        }
-        return newOffset;
-      });
+      if (event.key === 'k' || event.key === 'K') {
+        updateCameraOffset(zoomDistanceFactor, true);
+      } else if (event.key === 'j' || event.key === 'J') {
+        updateCameraOffset(zoomDistanceFactor, false);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [updateCameraOffset]);
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
-  // Removed handleWaypointTransformChange and handleWaypointDragEnd functions
-
+  // Memoize the background style
+  const backgroundStyle = useMemo(() => ({
+    background: 'linear-gradient(135deg,rgb(20, 135, 184) 0%,rgb(48, 154, 224) 20%, #74c0fc 40%,rgb(228, 197, 151) 60%, #ff5e3a 100%)',
+    backgroundSize: 'cover',
+    backgroundAttachment: 'fixed',
+    position: 'fixed' as const,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
+  }), []);
 
   return (
-    <div
-      className="w-full h-screen"
-      style={{
-        background: 'linear-gradient(135deg,rgb(20, 135, 184) 0%,rgb(48, 154, 224) 20%, #74c0fc 40%,rgb(228, 197, 151) 60%, #ff5e3a 100%)',
-        backgroundSize: 'cover',
-        backgroundAttachment: 'fixed',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: -1,
-      }}
-    >
-      {/* OUTSIDE CANVAS: HTML Manual Button */}
-      <button
-        style={{
-          position: 'absolute',
-          top: 32,
-          left: 32,
-          zIndex: 100,
-          padding: '16px 32px',
-          borderRadius: '8px',
-          border: 'none',
-          background: 'linear-gradient(90deg, #ff5e3a, #ff9d4d, #74c0fc)',
-          color: '#fff',
-          fontWeight: 'bold',
-          fontSize: '1.2rem',
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-        }}
-        onClick={() => {
-          setDrivingMode('manual');
-          console.log('Switched to Manual Driving Mode');
-        }}
-      >
-        Manual
-      </button>
+    <div className="w-full h-screen" style={backgroundStyle}>
+      <ManualButton onClick={handleManualMode} />
 
       <Canvas
         shadows
@@ -188,47 +210,28 @@ function App() {
             fixedCameraRotation={fixedCameraRotation}
             cameraOffset={currentCameraOffset}
             isManualModeEnabled={drivingMode === 'manual'}
-            autonomousPath={waypoints} // Pass the state variable 'waypoints'
+            autonomousPath={waypoints}
             currentWaypointIndex={currentWaypointIndex}
             setCurrentWaypointIndex={setCurrentWaypointIndex}
             WAYPOINT_THRESHOLD={WAYPOINT_THRESHOLD}
           />
 
-          {/* Manual Button */}
-          {/* <RainbowButton
-            position={buttonPosition1}
-            text="Drive"
-            onClick={() => {
-              setDrivingMode('drive');
-              console.log('Switched to Drive Mode');
-            }}
-          /> */}
-
-          {/* Drive Button */}
           <RainbowButton
             position={buttonPosition2}
             text="Drive"
-            onClick={() => {
-              setDrivingMode('drive');
-              console.log('Switched to Drive Mode');
-            }}
+            onClick={handleDriveMode}
           />
 
-          <Walls /> {/* Add Walls component here */}
-          {/* <CityArch  /> 
-          <CityNameBoard name="SARRAN" position={[-8, 0, 13]} /> Add CityNameBoard component */}
+          <Walls />
+          <CityArch />
+          <CityNameBoard name="SARRAN" position={[-8, 0, 13]} />
 
-          {/* Removed TransformControls and waypointMeshRefs as waypoints are no longer draggable */}
-          {/* Visual debug spheres for waypoints */}
           {waypoints.map((wp, index) => (
-            <mesh key={index} position={wp}>
-              <sphereGeometry args={[WAYPOINT_THRESHOLD / 2, 16, 16]} />
-              <meshBasicMaterial
-                color={index === currentWaypointIndex ? 'red' : 'blue'}
-                transparent
-                opacity={0}
-              />
-            </mesh>
+            <WaypointMarker
+              key={index}
+              position={wp}
+              isCurrent={index === currentWaypointIndex}
+            />
           ))}
         </Physics>
 
@@ -255,4 +258,4 @@ function App() {
   );
 }
 
-export default App;
+export default React.memo(App);
