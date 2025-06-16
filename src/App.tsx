@@ -209,10 +209,11 @@ function App() {
           intensity={0.5}
           color="#ff9d4d"
         />
-        <OrbitControls />
+        {drivingMode === 'manual' && <OrbitControls enableDamping />}
       </Canvas>
     </div>
   );
 }
 
 export default React.memo(App);
+
