@@ -14,6 +14,7 @@ import { interpolatePath } from './components/helpers/interpolatePath';
 import { baseAutonomousPath } from './utils/trackData';
 import ManualButton from './components/ui/ManualButton';
 import WaypointMarker from './components/ui/WaypointMarker';
+import Statue from './components/3d/statue';
 
 // Base track coordinates are now imported from utils/trackData
 const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
@@ -143,6 +144,8 @@ function App() {
               threshold={WAYPOINT_THRESHOLD}
             />
           ))}
+
+          <Statue position={[5, 0, 5]} scale={[2, 2, 2]} />
         </Physics>
 
         <ambientLight intensity={0.6} color="#ff9d4d" />
