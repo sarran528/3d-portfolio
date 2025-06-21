@@ -11,59 +11,13 @@ import CityArch from './components/3d/CityArch';
 import CityNameBoard from './components/3d/CityNameBoard';
 import * as THREE from 'three';
 import { interpolatePath } from './components/helpers/interpolatePath';
+import { baseAutonomousPath } from './utils/trackData';
+import ManualButton from './components/ui/ManualButton';
+import WaypointMarker from './components/ui/WaypointMarker';
 
-// Base track coordinates
-const baseAutonomousPath: THREE.Vector3[] = [
-  new THREE.Vector3(0.00, 0.1, 0.00),
-  new THREE.Vector3(3, 0.1, 12),
-  new THREE.Vector3(20.58, 0.1, 14.78),
-  new THREE.Vector3(37.43, 0.1, 14.07),
-  new THREE.Vector3(43.74, 0.1, 23.56),
-  new THREE.Vector3(35.38, 0.1, 34.9),
-  new THREE.Vector3(23.2, 0.1, 31.9),
-  new THREE.Vector3(21.9, 0.1, 25),
-  new THREE.Vector3(20.33, 0.1, -20),
-  new THREE.Vector3(10.50, 0.1, -27),
-  new THREE.Vector3(-1.46, 0.1, -18.65),
-];
-
+// Base track coordinates are now imported from utils/trackData
 const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
 const WAYPOINT_THRESHOLD = 5;
-
-// UI Components
-const ManualButton = React.memo(({ onClick }: { onClick: () => void }) => (
-  <button
-    style={{
-      position: 'absolute',
-      top: 32,
-      left: 32,
-      zIndex: 100,
-      padding: '16px 32px',
-      borderRadius: '8px',
-      border: 'none',
-      background: 'linear-gradient(90deg, #ff5e3a, #ff9d4d, #74c0fc)',
-      color: '#fff',
-      fontWeight: 'bold',
-      fontSize: '1.2rem',
-      cursor: 'pointer',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-    }}
-    onClick={onClick}
-  >
-    Manual
-  </button>
-));
-
-const WaypointMarker = React.memo(({ position, isCurrent }: { position: THREE.Vector3, isCurrent: boolean }) => (
-  <mesh position={position}>
-    <sphereGeometry args={[WAYPOINT_THRESHOLD / 2, 16, 16]} />
-    <meshBasicMaterial
-      color={isCurrent ? 'red' : 'blue'}
-      transparent
-      opacity={0}
-    />
-  </mesh>
-));
 
 function App() {
   const [drivingMode, setDrivingMode] = useState<'manual' | 'drive'>('manual');
@@ -188,6 +142,7 @@ function App() {
               key={index}
               position={wp}
               isCurrent={index === currentWaypointIndex}
+              threshold={WAYPOINT_THRESHOLD}
             />
           ))}
         </Physics>
