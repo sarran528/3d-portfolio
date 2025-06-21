@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
 import { Environment, OrbitControls } from '@react-three/drei';
@@ -27,8 +27,6 @@ function App() {
     new THREE.Vector3(2, 10, 11)
   );
 
-  const waypointMeshRefs = useRef<(THREE.Mesh | null)[]>([]);
-  const coordsDisplayRef = useRef<HTMLDivElement>(null);
 
   const fixedCameraRotation = useMemo(() => new THREE.Euler(
     -Math.PI * 8 / 33,
