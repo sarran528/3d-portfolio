@@ -145,7 +145,7 @@ function App() {
             />
           ))}
 
-          <Statue position={[5, 0, 5]} scale={[2, 2, 2]} />
+          <Statue position={[-22, 4.5, -5]} scale={[0.18, 0.18, 0.18]} />
         </Physics>
 
         <ambientLight intensity={0.6} color="#ff9d4d" />
