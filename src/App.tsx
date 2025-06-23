@@ -173,3 +173,7 @@ function App() {
 
 export default React.memo(App);
 ///ergn ergu  rgeri gqriogqerg qoern bo q enboernqeof ndlvn mlc
+
+
+////the camer a i tilted down a bit to give a better view of the track and car
+///the camera offset is adjustable with the 'k' and 'j' keys for zooming
