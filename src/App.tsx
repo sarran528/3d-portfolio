@@ -172,8 +172,5 @@ function App() {
 }
 
 export default React.memo(App);
-///ergn ergu  rgeri gqriogqerg qoern bo q enboernqeof ndlvn mlc
-
-
-////the camer a i tilted down a bit to give a better view of the track and car
-///the camera offset is adjustable with the 'k' and 'j' keys for zooming
+// This code is the main entry point for the React application, setting up the 3D scene with Three.js and React Three Fiber.
+// It includes components for the track, car, environment, and UI elements like buttons and way
