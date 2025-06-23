@@ -172,5 +172,3 @@ function App() {
 }
 
 export default React.memo(App);
-// This code is the main entry point for the React application, setting up the 3D scene with Three.js and React Three Fiber.
-// It includes components for the track, car, environment, and UI elements like buttons and way
