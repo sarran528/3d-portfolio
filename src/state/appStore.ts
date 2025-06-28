@@ -6,24 +6,49 @@ interface AppState {
   currentWaypointIndex: number;
   cameraOffset: THREE.Vector3;
   isLoading: boolean;
+  waypoints: THREE.Vector3[];
   
   // Actions
   setDrivingMode: (mode: 'manual' | 'drive') => void;
-  setCurrentWaypointIndex: (index: number) => void;
+  setCurrentWaypointIndex: React.Dispatch<React.SetStateAction<number>>;
   setCameraOffset: (offset: THREE.Vector3) => void;
   setLoading: (loading: boolean) => void;
   resetWaypointIndex: () => void;
+  updateCameraOffset: (zoomDistanceFactor: number, isZoomIn: boolean) => void;
+  setWaypoints: (waypoints: THREE.Vector3[]) => void;
 }
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>((set, get) => ({
   drivingMode: 'manual',
   currentWaypointIndex: 0,
   cameraOffset: new THREE.Vector3(2, 10, 11),
   isLoading: false,
+  waypoints: [],
   
   setDrivingMode: (mode) => set({ drivingMode: mode }),
-  setCurrentWaypointIndex: (index) => set({ currentWaypointIndex: index }),
+  setCurrentWaypointIndex: (value) => {
+    if (typeof value === 'function') {
+      set((state) => ({ currentWaypointIndex: value(state.currentWaypointIndex) }));
+    } else {
+      set({ currentWaypointIndex: value });
+    }
+  },
   setCameraOffset: (offset) => set({ cameraOffset: offset }),
   setLoading: (loading) => set({ isLoading: loading }),
   resetWaypointIndex: () => set({ currentWaypointIndex: 0 }),
+  setWaypoints: (waypoints) => set({ waypoints }),
+  
+  updateCameraOffset: (zoomDistanceFactor: number, isZoomIn: boolean) => {
+    set((state) => {
+      const newOffset = state.cameraOffset.clone();
+      if (isZoomIn) {
+        newOffset.z = Math.max(5, newOffset.z - zoomDistanceFactor * 2);
+        newOffset.y = Math.max(5, newOffset.y - zoomDistanceFactor);
+      } else {
+        newOffset.z = Math.min(30, newOffset.z + zoomDistanceFactor * 2);
+        newOffset.y = Math.min(20, newOffset.y + zoomDistanceFactor);
+      }
+      return { cameraOffset: newOffset };
+    });
+  },
 })); 

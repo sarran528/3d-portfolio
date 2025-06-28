@@ -11,23 +11,37 @@ import CityArch from './components/3d/architecture/CityArch';
 import CityNameBoard from './components/3d/architecture/CityNameBoard';
 import * as THREE from 'three';
 import { interpolatePath } from './utils/interpolatePath';
-import { baseAutonomousPath } from './utils/trackData';
+import { baseAutonomousPath, WAYPOINT_THRESHOLD } from './utils/trackData';
 import ManualButton from './components/common/ManualButton';
 import WaypointMarker from './components/ui/WaypointMarker';
 import Statue from './components/3d/props/statue';
+import { useAppStore } from './state/appStore';
 
 // Base track coordinates are now imported from utils/trackData
 const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
-const WAYPOINT_THRESHOLD = 5;
 
 function App() {
-  const [drivingMode, setDrivingMode] = useState<'manual' | 'drive'>('manual');
-  const [currentWaypointIndex, setCurrentWaypointIndex] = useState(0);
-  const [waypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
-  const [currentCameraOffset, setCurrentCameraOffset] = useState(
-    new THREE.Vector3(2, 10, 11)
-  );
+  // Use appStore for state management
+  const {
+    drivingMode,
+    setDrivingMode,
+    currentWaypointIndex,
+    setCurrentWaypointIndex,
+    cameraOffset,
+    updateCameraOffset,
+    setWaypoints
+  } = useAppStore();
 
+  // State for mouse camera control
+  const [mouseControlEnabled, setMouseControlEnabled] = useState(false);
+
+  // Initialize waypoints in store
+  const [waypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
+  
+  // Set waypoints in store on mount
+  useEffect(() => {
+    setWaypoints(waypoints);
+  }, [waypoints, setWaypoints]);
 
   const fixedCameraRotation = useMemo(() => new THREE.Euler(
     -Math.PI * 8 / 33,
@@ -40,32 +54,18 @@ function App() {
   const handleManualMode = useCallback(() => {
     setDrivingMode('manual');
     console.log('Switched to Manual Driving Mode');
-  }, []);
+  }, [setDrivingMode]);
 
   const handleDriveMode = useCallback(() => {
     setDrivingMode('drive');
     console.log('Switched to Drive Mode');
-  }, []);
-
-  const updateCameraOffset = useCallback((zoomDistanceFactor: number, isZoomIn: boolean) => {
-    setCurrentCameraOffset((prevOffset) => {
-      const newOffset = prevOffset.clone();
-      if (isZoomIn) {
-        newOffset.z = Math.max(5, newOffset.z - zoomDistanceFactor * 2);
-        newOffset.y = Math.max(5, newOffset.y - zoomDistanceFactor);
-      } else {
-        newOffset.z = Math.min(30, newOffset.z + zoomDistanceFactor * 2);
-        newOffset.y = Math.min(20, newOffset.y + zoomDistanceFactor);
-      }
-      return newOffset;
-    });
-  }, []);
+  }, [setDrivingMode]);
 
   useEffect(() => {
     if (drivingMode === 'drive') {
       setCurrentWaypointIndex(0);
     }
-  }, [drivingMode]);
+  }, [drivingMode, setCurrentWaypointIndex]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -74,17 +74,20 @@ function App() {
         updateCameraOffset(zoomDistanceFactor, true);
       } else if (event.key === 'j' || event.key === 'J') {
         updateCameraOffset(zoomDistanceFactor, false);
+      } else if (event.key === 'M' || event.key === 'm') {
+        setMouseControlEnabled(prev => !prev);
+        console.log('Mouse camera control:', !mouseControlEnabled ? 'enabled' : 'disabled');
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [updateCameraOffset]);
+  }, [updateCameraOffset, mouseControlEnabled]);
 
   const backgroundStyle = useMemo(() => ({
     background: 'linear-gradient(135deg,rgb(20, 135, 184) 0%,rgb(48, 154, 224) 20%, #74c0fc 40%,rgb(228, 197, 151) 60%, #ff5e3a 100%)',
     backgroundSize: 'cover',
-    backgroundAttachment: 'fixed',
+    backgroundAttachment: 'fixed' as const,
     position: 'fixed' as const,
     top: 0,
     left: 0,
@@ -100,8 +103,6 @@ function App() {
       <Canvas
         shadows
         camera={{
-          position: [currentCameraOffset.x, currentCameraOffset.y, currentCameraOffset.z],
-          rotation: [fixedCameraRotation.x, fixedCameraRotation.y, fixedCameraRotation.z],
           fov: 75,
           near: 0.1,
           far: 1000,
@@ -118,12 +119,13 @@ function App() {
           <Track />
           <Car
             fixedCameraRotation={fixedCameraRotation}
-            cameraOffset={currentCameraOffset}
+            cameraOffset={cameraOffset}
             isManualModeEnabled={drivingMode === 'manual'}
             autonomousPath={waypoints}
             currentWaypointIndex={currentWaypointIndex}
             setCurrentWaypointIndex={setCurrentWaypointIndex}
             WAYPOINT_THRESHOLD={WAYPOINT_THRESHOLD}
+            mouseControlEnabled={mouseControlEnabled}
           />
 
           <RainbowButton
@@ -165,7 +167,7 @@ function App() {
           intensity={0.5}
           color="#ff9d4d"
         />
-        {drivingMode === 'manual' && <OrbitControls enableDamping />}
+        <OrbitControls enableDamping enablePan enableZoom enabled={mouseControlEnabled} />
       </Canvas>
     </div>
   );

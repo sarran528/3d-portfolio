@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import * as THREE from 'three';
-import { interpolatePath, baseAutonomousPath } from '../utils/math'; // Import from utils
+import { interpolatePath } from '../utils/interpolatePath';
+import { baseAutonomousPath } from '../utils/trackData';
 
 export function useWaypoints() {
   // baseAutonomousPath is now imported from utils

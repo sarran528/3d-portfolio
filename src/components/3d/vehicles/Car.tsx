@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { lerpVector3 } from '../../../utils/math';
+import { easing } from '../../../utils/easing';
 
 const SPEED = 0.15;
 const TURN_SPEED = 0.015;
@@ -16,6 +18,7 @@ interface CarProps {
   currentWaypointIndex: number;
   setCurrentWaypointIndex: React.Dispatch<React.SetStateAction<number>>;
   WAYPOINT_THRESHOLD: number;
+  mouseControlEnabled: boolean;
 }
 
 const Car: React.FC<CarProps> = ({
@@ -25,7 +28,8 @@ const Car: React.FC<CarProps> = ({
   autonomousPath,
   currentWaypointIndex,
   setCurrentWaypointIndex,
-  WAYPOINT_THRESHOLD
+  WAYPOINT_THRESHOLD,
+  mouseControlEnabled
 }) => {
   const { scene } = useGLTF('/models/vehicles/car.glb');
   const carRef = useRef<THREE.Group>(null);
@@ -168,15 +172,23 @@ const Car: React.FC<CarProps> = ({
       }
     }
 
-    // Camera follow logic
-    targetCameraPosition.current.set(
-      car.position.x + cameraOffset.x,
-      car.position.y + cameraOffset.y,
-      car.position.z + cameraOffset.z
-    );
+    // Camera follow logic with easing (only when mouse control is disabled)
+    if (!mouseControlEnabled) {
+      targetCameraPosition.current.set(
+        car.position.x + cameraOffset.x,
+        car.position.y + cameraOffset.y,
+        car.position.z + cameraOffset.z
+      );
 
-    camera.position.lerp(targetCameraPosition.current, 0.1);
-    camera.rotation.copy(fixedCameraRotation);
+      // Use easing for smoother camera movement
+      const easedPosition = lerpVector3(
+        camera.position,
+        targetCameraPosition.current,
+        0.05 // Smoother camera following
+      );
+      camera.position.copy(easedPosition);
+      camera.rotation.copy(fixedCameraRotation);
+    }
 
     // Wall collision detection and response
     const carHalfWidth = 2.5; // Adjust based on your car model's scale

@@ -15,3 +15,5 @@ export const baseAutonomousPath: THREE.Vector3[] = [
   new THREE.Vector3(10.50, 0.1, -27),
   new THREE.Vector3(-1.46, 0.1, -18.65),
 ];
+
+export const WAYPOINT_THRESHOLD = 5;
