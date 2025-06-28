@@ -16,6 +16,7 @@ import ManualButton from './components/common/ManualButton';
 import WaypointMarker from './components/ui/WaypointMarker';
 import Statue from './components/3d/props/statue';
 import { useAppStore } from './state/appStore';
+import Mailbox from './components/3d/environment/Mailbox';
 
 // Base track coordinates are now imported from utils/trackData
 const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
@@ -196,6 +197,7 @@ function App() {
           ))}
 
           <Statue position={[-15, 0, 8]} scale={[1.3,1.3,1.3]} />
+          <Mailbox position={[10, 0, 10]} scale={1.5} />
         </Physics>
 
         <ambientLight intensity={0.6} color="#ff9d4d" />
