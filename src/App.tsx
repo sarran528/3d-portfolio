@@ -184,7 +184,7 @@ function App() {
 
           <Walls />
           <CityArch />
-          <CityNameBoard name="SARRAN" position={[-17, 0, 13]} />
+          <CityNameBoard name="SARRAN" position={[-15, 0, 10]} />
 
           {waypoints.map((wp, index) => (
             <WaypointMarker

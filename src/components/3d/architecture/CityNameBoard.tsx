@@ -17,7 +17,7 @@ interface CityNameBoardProps {
 const CityNameBoard: React.FC<CityNameBoardProps> = ({
   name = "SARRAN",
   position = [9, 4, 0],
-  scale = [0.4, 0.4, 0.4]
+  scale = [0.2, 0.2, 0.2]
 }) => (
   <group position={position} scale={scale}>
     {/* Main white board with realistic material */}
@@ -28,7 +28,7 @@ const CityNameBoard: React.FC<CityNameBoardProps> = ({
     >
       <boxGeometry args={[BOARD_WIDTH, BOARD_HEIGHT, BOARD_DEPTH]} />
       <meshStandardMaterial 
-        color="#f8f8f8"
+        color="black"
         roughness={0.3}
         metalness={0.0}
       />
@@ -47,7 +47,7 @@ const CityNameBoard: React.FC<CityNameBoardProps> = ({
     >
       <boxGeometry args={[BOARD_WIDTH + BORDER * 2, BORDER, BOARD_DEPTH + 0.02]} />
       <meshStandardMaterial 
-        color="#cc0000"
+        color="white"
         roughness={0.4}
         metalness={0.1}
       />
@@ -60,7 +60,7 @@ const CityNameBoard: React.FC<CityNameBoardProps> = ({
     >
       <boxGeometry args={[BOARD_WIDTH + BORDER * 2, BORDER, BOARD_DEPTH + 0.02]} />
       <meshStandardMaterial 
-        color="#cc0000"
+        color="white"
         roughness={0.4}
         metalness={0.1}
       />
@@ -73,7 +73,7 @@ const CityNameBoard: React.FC<CityNameBoardProps> = ({
     >
       <boxGeometry args={[BORDER, BOARD_HEIGHT, BOARD_DEPTH + 0.02]} />
       <meshStandardMaterial 
-        color="#cc0000"
+        color="white"
         roughness={0.4}
         metalness={0.1}
       />
@@ -86,7 +86,7 @@ const CityNameBoard: React.FC<CityNameBoardProps> = ({
     >
       <boxGeometry args={[BORDER, BOARD_HEIGHT, BOARD_DEPTH + 0.02]} />
       <meshStandardMaterial 
-        color="#cc0000"
+        color="white"
         roughness={0.4}
         metalness={0.1}
       />
@@ -163,7 +163,7 @@ const CityNameBoard: React.FC<CityNameBoardProps> = ({
     <mesh position={[0, POST_HEIGHT + BOARD_HEIGHT / 2, BOARD_DEPTH / 2 + 0.01]}>
       <boxGeometry args={[BOARD_WIDTH - 0.5, BOARD_HEIGHT - 0.5, 0.02]} />
       <meshStandardMaterial 
-        color="#f0f0f0"
+        color="black"
         roughness={0.2}
         metalness={0.0}
       />
@@ -172,13 +172,13 @@ const CityNameBoard: React.FC<CityNameBoardProps> = ({
     {/* Name text with better typography */}
     <Text
       position={[0, POST_HEIGHT + BOARD_HEIGHT / 2, BOARD_DEPTH / 2 + 0.03]}
-      fontSize={0.8}
-      color="#1a1a1a"
+      fontSize={1.2}
+      color="white"
       anchorX="center"
       anchorY="middle"
-      letterSpacing={0.05}
-      outlineWidth={0.01}
-      outlineColor="#ffffff"
+      letterSpacing={0.08}
+      outlineWidth={0.02}
+      outlineColor="black"
     >
       {name}
     </Text>
@@ -190,7 +190,7 @@ const CityNameBoard: React.FC<CityNameBoardProps> = ({
     >
       <boxGeometry args={[BOARD_WIDTH - 1, 0.3, 0.001]} />
       <meshStandardMaterial 
-        color="#ffffff"
+        color="white"
         transparent
         opacity={0.1}
         roughness={0.0}
@@ -198,15 +198,7 @@ const CityNameBoard: React.FC<CityNameBoardProps> = ({
       />
     </mesh>
 
-    {/* Weather staining/aging effects */}
-    <mesh position={[0, POST_HEIGHT - 0.1, BOARD_DEPTH / 2 + 0.001]}>
-      <boxGeometry args={[BOARD_WIDTH + 0.3, 0.05, 0.001]} />
-      <meshStandardMaterial 
-        color="#d0d0d0"
-        transparent
-        opacity={0.3}
-      />
-    </mesh>
+    
   </group>
 );
 
