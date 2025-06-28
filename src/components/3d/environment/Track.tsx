@@ -4,7 +4,7 @@ import { useTrimesh } from '@react-three/cannon';
 import * as THREE from 'three';
 
 const Track: React.FC = () => {
-  const { scene } = useGLTF('/models/track.glb');
+  const { scene } = useGLTF('/models/environment/track.glb');
   const [isLoaded, setIsLoaded] = useState(false);
   
   // Extract vertices and indices from the GLB model

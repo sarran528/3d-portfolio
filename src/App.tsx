@@ -2,19 +2,19 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/cannon';
 import { Environment, OrbitControls } from '@react-three/drei';
-import Track from './components/3d/Track';
-import Floor from './components/3d/Floor';
-import Car from './components/3d/Car';
-import RainbowButton from './components/ui/RainbowButton';
-import Walls from './components/3d/Walls';
-import CityArch from './components/3d/CityArch';
-import CityNameBoard from './components/3d/CityNameBoard';
+import Track from './components/3d/environment/Track';
+import Floor from './components/3d/environment/Floor';
+import Car from './components/3d/vehicles/Car';
+import RainbowButton from './components/common/RainbowButton';
+import Walls from './components/3d/environment/Walls';
+import CityArch from './components/3d/architecture/CityArch';
+import CityNameBoard from './components/3d/architecture/CityNameBoard';
 import * as THREE from 'three';
-import { interpolatePath } from './components/helpers/interpolatePath';
+import { interpolatePath } from './utils/interpolatePath';
 import { baseAutonomousPath } from './utils/trackData';
-import ManualButton from './components/ui/ManualButton';
+import ManualButton from './components/common/ManualButton';
 import WaypointMarker from './components/ui/WaypointMarker';
-import Statue from './components/3d/statue';
+import Statue from './components/3d/props/statue';
 
 // Base track coordinates are now imported from utils/trackData
 const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
@@ -145,7 +145,7 @@ function App() {
             />
           ))}
 
-          <Statue position={[-22, 4.5, -5]} scale={[0.18, 0.18, 0.18]} />
+          <Statue position={[5, 0, 5]} scale={[2, 2, 2]} />
         </Physics>
 
         <ambientLight intensity={0.6} color="#ff9d4d" />
@@ -172,3 +172,4 @@ function App() {
 }
 
 export default React.memo(App);
+

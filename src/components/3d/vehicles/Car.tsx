@@ -27,7 +27,7 @@ const Car: React.FC<CarProps> = ({
   setCurrentWaypointIndex,
   WAYPOINT_THRESHOLD
 }) => {
-  const { scene } = useGLTF('/models/car.glb');
+  const { scene } = useGLTF('/models/vehicles/car.glb');
   const carRef = useRef<THREE.Group>(null);
   const keysRef = useRef<{
     ArrowUp: boolean;
