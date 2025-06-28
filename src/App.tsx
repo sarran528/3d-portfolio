@@ -47,9 +47,9 @@ function App() {
   }, [waypoints, setWaypoints]);
 
   const fixedCameraRotation = useMemo(() => new THREE.Euler(
-    -Math.PI * 8 / 33,
-    Math.PI * 2 / 4349,
-    0
+    -Math.PI / 4,  // X: tilt 45° down
+    Math.PI / 4,  // Y: rotate 45° left
+    Math.PI / 5  
   ), []);
 
   const buttonPosition2 = useMemo(() => [30, 0.5, -10] as [number, number, number], []);
@@ -199,7 +199,7 @@ function App() {
             />
           ))}
 
-          <Statue position={[-15, 0, 8]} scale={[1.3,1.3,1.3]} />
+          <Statue position={[-40, 0, 15]} scale={[3,3,3]} />
           <Mailbox position={[10, 0, 10]} scale={1.5} />
           <PCSetup position={[90, -24, 230]} scale={[20,20,20]} />
           <Server position={[-40, 0, 15]} scale={[3,3,3]} />

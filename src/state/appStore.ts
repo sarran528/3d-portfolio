@@ -23,7 +23,7 @@ interface AppState {
 export const useAppStore = create<AppState>((set, get) => ({
   drivingMode: 'manual',
   currentWaypointIndex: 0,
-  cameraOffset: new THREE.Vector3(2, 10, 11),
+  cameraOffset: new THREE.Vector3(10,10,10),
   isLoading: false,
   waypoints: [],
   mouseControlEnabled: false,
