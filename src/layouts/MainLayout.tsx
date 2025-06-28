@@ -23,7 +23,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     cameraOffset,
     waypoints,
     setCurrentWaypointIndex,
-    setDrivingMode
+    setDrivingMode,
+    mouseControlEnabled
   } = useAppStore();
 
   const backgroundStyle = {
@@ -95,7 +96,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           intensity={0.5}
           color="#ff9d4d"
         />
-        {drivingMode === 'manual' && <OrbitControls enableDamping />}
+        {drivingMode === 'manual' && mouseControlEnabled && (
+          <OrbitControls 
+            enableDamping 
+            enablePan 
+            enableZoom 
+            enabled={true}
+          />
+        )}
       </Canvas>
       
       {children}

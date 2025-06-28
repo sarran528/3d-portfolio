@@ -29,11 +29,10 @@ function App() {
     setCurrentWaypointIndex,
     cameraOffset,
     updateCameraOffset,
-    setWaypoints
+    setWaypoints,
+    mouseControlEnabled,
+    setMouseControlEnabled
   } = useAppStore();
-
-  // State for mouse camera control
-  const [mouseControlEnabled, setMouseControlEnabled] = useState(false);
 
   // Initialize waypoints in store
   const [waypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
@@ -75,14 +74,14 @@ function App() {
       } else if (event.key === 'j' || event.key === 'J') {
         updateCameraOffset(zoomDistanceFactor, false);
       } else if (event.key === 'M' || event.key === 'm') {
-        setMouseControlEnabled(prev => !prev);
+        setMouseControlEnabled(!mouseControlEnabled);
         console.log('Mouse camera control:', !mouseControlEnabled ? 'enabled' : 'disabled');
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [updateCameraOffset, mouseControlEnabled]);
+  }, [updateCameraOffset, mouseControlEnabled, setMouseControlEnabled]);
 
   const backgroundStyle = useMemo(() => ({
     background: 'linear-gradient(135deg,rgb(20, 135, 184) 0%,rgb(48, 154, 224) 20%, #74c0fc 40%,rgb(228, 197, 151) 60%, #ff5e3a 100%)',
@@ -98,32 +97,52 @@ function App() {
 
   useEffect(() => {
     const preventZoom = (e: any) => {
+      // Only prevent wheel events when mouse controls are disabled
+      if (!mouseControlEnabled && (e.type === 'wheel' || e.type === 'mousewheel')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      
       // Prevent zoom with Ctrl+Wheel or Ctrl+Plus/Minus/Equal
       if (
         (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=')) ||
-        (e.ctrlKey && (e.type === 'wheel' || e.type === 'mousewheel')) ||
         (e.metaKey && (e.key === '+' || e.key === '-' || e.key === '=')) // for Mac
       ) {
         e.preventDefault();
+        e.stopPropagation();
+        return false;
       }
+      
       // Prevent pinch zoom on touchpads
       if (e.type === 'gesturestart' || e.type === 'gesturechange') {
         e.preventDefault();
+        e.stopPropagation();
+        return false;
       }
     };
 
-    window.addEventListener('wheel', preventZoom);
+    // Add event listeners to both window and document
+    window.addEventListener('wheel', preventZoom, { passive: false });
+    window.addEventListener('mousewheel', preventZoom, { passive: false });
     window.addEventListener('keydown', preventZoom);
     window.addEventListener('gesturestart', preventZoom);
     window.addEventListener('gesturechange', preventZoom);
+    
+    // Also prevent on the document
+    document.addEventListener('wheel', preventZoom, { passive: false });
+    document.addEventListener('mousewheel', preventZoom, { passive: false });
 
     return () => {
       window.removeEventListener('wheel', preventZoom);
+      window.removeEventListener('mousewheel', preventZoom);
       window.removeEventListener('keydown', preventZoom);
       window.removeEventListener('gesturestart', preventZoom);
       window.removeEventListener('gesturechange', preventZoom);
+      document.removeEventListener('wheel', preventZoom);
+      document.removeEventListener('mousewheel', preventZoom);
     };
-  }, []);
+  }, [mouseControlEnabled]);
 
   return (
     <div className="w-full h-screen" style={backgroundStyle}>
@@ -196,7 +215,14 @@ function App() {
           intensity={0.5}
           color="#ff9d4d"
         />
-        <OrbitControls enableDamping enablePan enableZoom enabled={mouseControlEnabled} />
+        {mouseControlEnabled && (
+          <OrbitControls 
+            enableDamping 
+            enablePan 
+            enableZoom 
+            enabled={true}
+          />
+        )}
       </Canvas>
     </div>
   );

@@ -7,6 +7,7 @@ interface AppState {
   cameraOffset: THREE.Vector3;
   isLoading: boolean;
   waypoints: THREE.Vector3[];
+  mouseControlEnabled: boolean;
   
   // Actions
   setDrivingMode: (mode: 'manual' | 'drive') => void;
@@ -16,6 +17,7 @@ interface AppState {
   resetWaypointIndex: () => void;
   updateCameraOffset: (zoomDistanceFactor: number, isZoomIn: boolean) => void;
   setWaypoints: (waypoints: THREE.Vector3[]) => void;
+  setMouseControlEnabled: (enabled: boolean) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -24,6 +26,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   cameraOffset: new THREE.Vector3(2, 10, 11),
   isLoading: false,
   waypoints: [],
+  mouseControlEnabled: false,
   
   setDrivingMode: (mode) => set({ drivingMode: mode }),
   setCurrentWaypointIndex: (value) => {
@@ -51,4 +54,5 @@ export const useAppStore = create<AppState>((set, get) => ({
       return { cameraOffset: newOffset };
     });
   },
+  setMouseControlEnabled: (enabled) => set({ mouseControlEnabled: enabled }),
 })); 
