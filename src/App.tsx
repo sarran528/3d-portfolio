@@ -17,6 +17,9 @@ import WaypointMarker from './components/ui/WaypointMarker';
 import Statue from './components/3d/props/statue';
 import { useAppStore } from './state/appStore';
 import Mailbox from './components/3d/environment/Mailbox';
+import PCSetup from './components/3d/props/PCSetup';
+import Server from './components/3d/props/Server';
+import CityProp from './components/3d/props/CityProp';
 
 // Base track coordinates are now imported from utils/trackData
 const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
@@ -198,6 +201,13 @@ function App() {
 
           <Statue position={[-15, 0, 8]} scale={[1.3,1.3,1.3]} />
           <Mailbox position={[10, 0, 10]} scale={1.5} />
+          <PCSetup position={[90, -24, 230]} scale={[20,20,20]} />
+          <Server position={[-40, 0, 15]} scale={[3,3,3]} />
+          <CityProp 
+            modelPath="/models/environment/carprobs.glb"
+            position={[20, 0, 20]} 
+            scale={[1.5, 1.5, 1.5]} 
+          />
         </Physics>
 
         <ambientLight intensity={0.6} color="#ff9d4d" />

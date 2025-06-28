@@ -12,22 +12,22 @@ const Walls = () => (
     {/* Back wall (negative Z) */}
     <mesh position={[0, WALL_HEIGHT / 2, WALL_MIN_Z]}>
       <boxGeometry args={[WALL_MAX_X - WALL_MIN_X, WALL_HEIGHT, WALL_THICKNESS]} />
-      <meshStandardMaterial color="blue" />
+      <meshStandardMaterial color="blue" transparent opacity={0.3} />
     </mesh>
     {/* Front wall (positive Z) */}
     <mesh position={[0, WALL_HEIGHT / 2, WALL_MAX_Z]}>
       <boxGeometry args={[WALL_MAX_X - WALL_MIN_X, WALL_HEIGHT, WALL_THICKNESS]} />
-      <meshStandardMaterial color="blue" />
+      <meshStandardMaterial color="blue" transparent opacity={0.3} />
     </mesh>
     {/* Left wall (negative X) */}
     <mesh position={[WALL_MIN_X, WALL_HEIGHT / 2, 0]}>
       <boxGeometry args={[WALL_THICKNESS, WALL_HEIGHT, WALL_MAX_Z - WALL_MIN_Z]} />
-      <meshStandardMaterial color="blue" />
+      <meshStandardMaterial color="blue" transparent opacity={0.3} />
     </mesh>
     {/* Right wall (positive X) */}
     <mesh position={[WALL_MAX_X, WALL_HEIGHT / 2, 0]}>
       <boxGeometry args={[WALL_THICKNESS, WALL_HEIGHT, WALL_MAX_Z - WALL_MIN_Z]} />
-      <meshStandardMaterial color="blue" />
+      <meshStandardMaterial color="blue" transparent opacity={0.3} />
     </mesh>
   </>
 );
