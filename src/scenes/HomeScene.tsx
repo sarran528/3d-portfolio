@@ -49,6 +49,7 @@ const HomeScene: React.FC<HomeSceneProps> = ({
           currentWaypointIndex={currentWaypointIndex}
           setCurrentWaypointIndex={setCurrentWaypointIndex}
           WAYPOINT_THRESHOLD={WAYPOINT_THRESHOLD}
+          mouseControlEnabled={drivingMode === 'manual'}
         />
 
         <RainbowButton

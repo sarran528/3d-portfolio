@@ -97,7 +97,7 @@ function App() {
   }), []);
 
   useEffect(() => {
-    const preventZoom = (e) => {
+    const preventZoom = (e: any) => {
       // Prevent zoom with Ctrl+Wheel or Ctrl+Plus/Minus/Equal
       if (
         (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=')) ||
@@ -112,16 +112,16 @@ function App() {
       }
     };
 
-    window.addEventListener('wheel', preventZoom, { passive: false });
-    window.addEventListener('keydown', preventZoom, { passive: false });
-    window.addEventListener('gesturestart', preventZoom, { passive: false });
-    window.addEventListener('gesturechange', preventZoom, { passive: false });
+    window.addEventListener('wheel', preventZoom);
+    window.addEventListener('keydown', preventZoom);
+    window.addEventListener('gesturestart', preventZoom);
+    window.addEventListener('gesturechange', preventZoom);
 
     return () => {
-      window.removeEventListener('wheel', preventZoom, { passive: false });
-      window.removeEventListener('keydown', preventZoom, { passive: false });
-      window.removeEventListener('gesturestart', preventZoom, { passive: false });
-      window.removeEventListener('gesturechange', preventZoom, { passive: false });
+      window.removeEventListener('wheel', preventZoom);
+      window.removeEventListener('keydown', preventZoom);
+      window.removeEventListener('gesturestart', preventZoom);
+      window.removeEventListener('gesturechange', preventZoom);
     };
   }, []);
 
