@@ -165,7 +165,7 @@ function App() {
 
           <Walls />
           <CityArch />
-          <CityNameBoard name="SARRAN" position={[-8, 0, 13]} />
+          <CityNameBoard name="SARRAN" position={[-17, 0, 13]} />
 
           {waypoints.map((wp, index) => (
             <WaypointMarker
@@ -176,7 +176,7 @@ function App() {
             />
           ))}
 
-          <Statue position={[5, 0, 5]} scale={[2, 2, 2]} />
+          <Statue position={[-15, 0, 8]} scale={[1.3,1.3,1.3]} />
         </Physics>
 
         <ambientLight intensity={0.6} color="#ff9d4d" />
