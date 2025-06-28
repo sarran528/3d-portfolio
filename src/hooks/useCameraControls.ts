@@ -1,33 +1,30 @@
-import { useEffect } from 'react';
-import { useAppContext } from '../context/AppContext';
-import * as THREE from 'three';
+import { useState, useEffect } from 'react';
+import { useAppStore } from '../state/appStore';
 
-const useCameraControls = () => {
-  const { setCurrentCameraOffset } = useAppContext();
+export function useCameraControls() {
+  const [mouseControlEnabled, setMouseControlEnabled] = useState(false);
+  const { updateCameraOffset } = useAppStore();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const zoomDistanceFactor = 0.5;
-
-      setCurrentCameraOffset((prevOffset) => {
-        const newOffset = prevOffset.clone();
-        if (event.key === 'k' || event.key === 'K') {
-          newOffset.z = Math.max(5, newOffset.z - zoomDistanceFactor * 2);
-          newOffset.y = Math.max(5, newOffset.y - zoomDistanceFactor);
-        } else if (event.key === 'j' || event.key === 'J') {
-          newOffset.z = Math.min(30, newOffset.z + zoomDistanceFactor * 2);
-          newOffset.y = Math.min(20, newOffset.y + zoomDistanceFactor);
-        }
-        return newOffset;
-      });
+      
+      if (event.key === 'k' || event.key === 'K') {
+        updateCameraOffset(zoomDistanceFactor, true);
+      } else if (event.key === 'j' || event.key === 'J') {
+        updateCameraOffset(zoomDistanceFactor, false);
+      } else if (event.key === 'M' || event.key === 'm') {
+        setMouseControlEnabled(prev => !prev);
+        console.log('Mouse camera control:', !mouseControlEnabled ? 'enabled' : 'disabled');
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [updateCameraOffset, mouseControlEnabled]);
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [setCurrentCameraOffset]); // Add setCurrentCameraOffset to the dependency array
-};
-
-export default useCameraControls;
+  return {
+    mouseControlEnabled,
+    setMouseControlEnabled
+  };
+}

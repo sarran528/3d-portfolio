@@ -96,6 +96,35 @@ function App() {
     zIndex: -1,
   }), []);
 
+  useEffect(() => {
+    const preventZoom = (e) => {
+      // Prevent zoom with Ctrl+Wheel or Ctrl+Plus/Minus/Equal
+      if (
+        (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=')) ||
+        (e.ctrlKey && (e.type === 'wheel' || e.type === 'mousewheel')) ||
+        (e.metaKey && (e.key === '+' || e.key === '-' || e.key === '=')) // for Mac
+      ) {
+        e.preventDefault();
+      }
+      // Prevent pinch zoom on touchpads
+      if (e.type === 'gesturestart' || e.type === 'gesturechange') {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('wheel', preventZoom, { passive: false });
+    window.addEventListener('keydown', preventZoom, { passive: false });
+    window.addEventListener('gesturestart', preventZoom, { passive: false });
+    window.addEventListener('gesturechange', preventZoom, { passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', preventZoom, { passive: false });
+      window.removeEventListener('keydown', preventZoom, { passive: false });
+      window.removeEventListener('gesturestart', preventZoom, { passive: false });
+      window.removeEventListener('gesturechange', preventZoom, { passive: false });
+    };
+  }, []);
+
   return (
     <div className="w-full h-screen" style={backgroundStyle}>
       <ManualButton onClick={handleManualMode} />
