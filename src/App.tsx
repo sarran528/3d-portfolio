@@ -185,7 +185,7 @@ function App() {
             text="Drive"
             onClick={handleDriveMode}
           />
-{/* sjdddddsdvkmsdnvodn/}
+
           <Walls />
           <CityArch />
           <CityNameBoard name="SARRAN" position={[-15, 0, 10]} />
