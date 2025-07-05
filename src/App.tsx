@@ -148,6 +148,22 @@ function App() {
     };
   }, [mouseControlEnabled]);
 
+  // Double the number of waypoints by interpolating one extra point between each pair
+  function doubleWaypoints(waypoints: THREE.Vector3[]) {
+    const doubled: THREE.Vector3[] = [];
+    for (let i = 0; i < waypoints.length; i++) {
+      const current = waypoints[i];
+      const next = waypoints[(i + 1) % waypoints.length];
+      doubled.push(current.clone());
+      // Insert midpoint
+      const midpoint = current.clone().lerp(next, 0.5);
+      doubled.push(midpoint);
+    }
+    return doubled;
+  }
+
+  const doubledWaypoints = useMemo(() => doubleWaypoints(waypoints), [waypoints]);
+
   return (
     <div className="w-full h-screen" style={backgroundStyle}>
       <ManualButton onClick={handleManualMode} />
@@ -189,12 +205,13 @@ function App() {
           <CityArch />
           <CityNameBoard name="SARRAN" position={[-15, 0, 10]} />
 
-          {waypoints.map((wp, index) => (
+          {doubledWaypoints.map((wp, index) => (
             <WaypointMarker
               key={index}
               position={wp}
               isCurrent={index === currentWaypointIndex}
               threshold={WAYPOINT_THRESHOLD}
+              index={index}
             />
           ))}
 
