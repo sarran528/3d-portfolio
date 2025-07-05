@@ -164,6 +164,9 @@ function App() {
 
   const doubledWaypoints = useMemo(() => doubleWaypoints(waypoints), [waypoints]);
 
+  // If doubledWaypoints is your array of waypoints:
+  const limitedWaypoints = doubledWaypoints.slice(0, 17);
+
   return (
     <div className="w-full h-screen" style={backgroundStyle}>
       <ManualButton onClick={handleManualMode} />
@@ -205,7 +208,7 @@ function App() {
           <CityArch />
           <CityNameBoard name="SARRAN" position={[-15, 0, 10]} />
 
-          {doubledWaypoints.map((wp, index) => (
+          {limitedWaypoints.map((wp, index) => (
             <WaypointMarker
               key={index}
               position={wp}
