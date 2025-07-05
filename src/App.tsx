@@ -39,7 +39,7 @@ function App() {
   } = useAppStore();
 
   // Initialize waypoints in store
-  const [waypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
+  const [waypoints, setLocalWaypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
   
   // Set waypoints in store on mount
   useEffect(() => {
@@ -167,6 +167,14 @@ function App() {
   // If doubledWaypoints is your array of waypoints:
   const limitedWaypoints = doubledWaypoints.slice(0, 17);
 
+  const handleWaypointMove = (newPos: THREE.Vector3, idx: number) => {
+    setLocalWaypoints((wps) => {
+      const updated = [...wps];
+      updated[idx] = newPos;
+      return updated;
+    });
+  };
+
   return (
     <div className="w-full h-screen" style={backgroundStyle}>
       <ManualButton onClick={handleManualMode} />
@@ -215,6 +223,7 @@ function App() {
               isCurrent={index === currentWaypointIndex}
               threshold={WAYPOINT_THRESHOLD}
               index={index}
+              onMove={handleWaypointMove}
             />
           ))}
 
