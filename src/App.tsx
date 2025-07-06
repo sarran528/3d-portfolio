@@ -275,4 +275,4 @@ function App() {
 
 export default React.memo(App);
 
-//fiine tunned the track
+//track bug fixed
