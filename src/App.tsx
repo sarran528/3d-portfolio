@@ -40,6 +40,7 @@ function App() {
 
   // Initialize waypoints in store
   const [waypoints, setLocalWaypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
+  const [singleWaypoint, setSingleWaypoint] = useState<THREE.Vector3>(new THREE.Vector3(0, 0.1, 0));
   
   // Set waypoints in store on mount
   useEffect(() => {
@@ -73,6 +74,8 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const zoomDistanceFactor = 0.5;
+      const waypointMoveDistance = 1; // Distance to move waypoint per key press
+      
       if (event.key === 'k' || event.key === 'K') {
         updateCameraOffset(zoomDistanceFactor, true);
       } else if (event.key === 'j' || event.key === 'J') {
@@ -80,6 +83,18 @@ function App() {
       } else if (event.key === 'M' || event.key === 'm') {
         setMouseControlEnabled(!mouseControlEnabled);
         console.log('Mouse camera control:', !mouseControlEnabled ? 'enabled' : 'disabled');
+      } else if (event.key === 'ArrowLeft') {
+        // Move waypoint left (negative X)
+        setSingleWaypoint(prev => new THREE.Vector3(prev.x - waypointMoveDistance, prev.y, prev.z));
+      } else if (event.key === 'ArrowRight') {
+        // Move waypoint right (positive X)
+        setSingleWaypoint(prev => new THREE.Vector3(prev.x + waypointMoveDistance, prev.y, prev.z));
+      } else if (event.key === 'ArrowUp') {
+        // Move waypoint forward (negative Z)
+        setSingleWaypoint(prev => new THREE.Vector3(prev.x, prev.y, prev.z - waypointMoveDistance));
+      } else if (event.key === 'ArrowDown') {
+        // Move waypoint backward (positive Z)
+        setSingleWaypoint(prev => new THREE.Vector3(prev.x, prev.y, prev.z + waypointMoveDistance));
       }
     };
 
@@ -148,25 +163,6 @@ function App() {
     };
   }, [mouseControlEnabled]);
 
-  // Double the number of waypoints by interpolating one extra point between each pair
-  function doubleWaypoints(waypoints: THREE.Vector3[]) {
-    const doubled: THREE.Vector3[] = [];
-    for (let i = 0; i < waypoints.length; i++) {
-      const current = waypoints[i];
-      const next = waypoints[(i + 1) % waypoints.length];
-      doubled.push(current.clone());
-      // Insert midpoint
-      const midpoint = current.clone().lerp(next, 0.5);
-      doubled.push(midpoint);
-    }
-    return doubled;
-  }
-
-  const doubledWaypoints = useMemo(() => doubleWaypoints(waypoints), [waypoints]);
-
-  // If doubledWaypoints is your array of waypoints:
-  const limitedWaypoints = doubledWaypoints.slice(0, 17);
-
   const handleWaypointMove = (newPos: THREE.Vector3, idx: number) => {
     setLocalWaypoints((wps) => {
       const updated = [...wps];
@@ -175,9 +171,21 @@ function App() {
     });
   };
 
+  const handleSingleWaypointMove = (newPos: THREE.Vector3) => {
+    setSingleWaypoint(newPos);
+  };
+
   return (
     <div className="w-full h-screen" style={backgroundStyle}>
       <ManualButton onClick={handleManualMode} />
+
+      {/* Coordinate Tracker */}
+      <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-3 rounded-lg text-sm font-mono">
+        <h3 className="font-bold mb-2">Waypoint Coordinates</h3>
+        <p>X: {singleWaypoint.x.toFixed(2)}</p>
+        <p>Y: {singleWaypoint.y.toFixed(2)}</p>
+        <p>Z: {singleWaypoint.z.toFixed(2)}</p>
+      </div>
 
       <Canvas
         shadows
@@ -216,16 +224,13 @@ function App() {
           <CityArch />
           <CityNameBoard name="SARRAN" position={[-15, 0, 10]} />
 
-          {limitedWaypoints.map((wp, index) => (
-            <WaypointMarker
-              key={index}
-              position={wp}
-              isCurrent={index === currentWaypointIndex}
-              threshold={WAYPOINT_THRESHOLD}
-              index={index}
-              onMove={handleWaypointMove}
-            />
-          ))}
+          <WaypointMarker
+            position={singleWaypoint}
+            isCurrent={true}
+            threshold={WAYPOINT_THRESHOLD}
+            index={0}
+            onMove={handleSingleWaypointMove}
+          />
 
           <Statue position={[-40, 0, 15]} scale={[3,3,3]} />
           <Mailbox position={[10, 0, 10]} scale={1.5} />
