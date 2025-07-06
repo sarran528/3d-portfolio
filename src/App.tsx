@@ -275,4 +275,3 @@ function App() {
 
 export default React.memo(App);
 
-//track bug fixed
