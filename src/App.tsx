@@ -4,6 +4,7 @@ import { interpolatePath } from './utils/interpolatePath';
 import { baseAutonomousPath, WAYPOINT_THRESHOLD } from './utils/trackData';
 import * as THREE from 'three';
 import { useAppStore } from './state/appStore';
+import ManualButton from './components/common/ManualButton';
 
 const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
 
@@ -113,33 +114,42 @@ function App() {
     };
   }, [mouseControlEnabled]);
 
-  // Creative main page layout: Centered card with a title and the canvas inside
+  // Restore the original simple 3D view for development
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 p-8">
-      <div className="w-full max-w-4xl bg-white/10 rounded-2xl shadow-2xl p-8 flex flex-col items-center">
-        <h1 className="text-4xl font-extrabold text-white mb-6 tracking-tight drop-shadow-lg text-center">
-          🚗 3D Portfolio City Drive
-        </h1>
-        <p className="text-lg text-blue-100 mb-8 text-center max-w-2xl">
-          Explore the interactive 3D city! Use the manual/drive modes, move waypoints, and enjoy the immersive experience.<br/>
-          <span className="text-xs text-orange-200">(Use arrow keys to move the waypoint, M to toggle mouse camera, J/K to zoom)</span>
-        </p>
-        <ThreeDScene
-          drivingMode={drivingMode}
-          setDrivingMode={setDrivingMode}
-          cameraOffset={cameraOffset}
-          waypoints={waypoints}
-          currentWaypointIndex={currentWaypointIndex}
-          setCurrentWaypointIndex={setCurrentWaypointIndex}
-          mouseControlEnabled={mouseControlEnabled}
-          setMouseControlEnabled={setMouseControlEnabled}
-          setWaypoints={setWaypoints}
-          singleWaypoint={singleWaypoint}
-          handleDriveMode={handleDriveMode}
-          fixedCameraRotation={fixedCameraRotation}
-          onManualButton={handleManualMode}
-        />
+    <div className="w-full h-screen" style={{
+      background: 'linear-gradient(135deg,rgb(20, 135, 184) 0%,rgb(48, 154, 224) 20%, #74c0fc 40%,rgb(228, 197, 151) 60%, #ff5e3a 100%)',
+      backgroundSize: 'cover',
+      backgroundAttachment: 'fixed',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: -1,
+    }}>
+      <ManualButton onClick={handleManualMode} />
+      {/* Coordinate Tracker */}
+      <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-3 rounded-lg text-sm font-mono">
+        <h3 className="font-bold mb-2">Waypoint Coordinates</h3>
+        <p>X: {singleWaypoint.x.toFixed(2)}</p>
+        <p>Y: {singleWaypoint.y.toFixed(2)}</p>
+        <p>Z: {singleWaypoint.z.toFixed(2)}</p>
       </div>
+      <ThreeDScene
+        drivingMode={drivingMode}
+        setDrivingMode={setDrivingMode}
+        cameraOffset={cameraOffset}
+        waypoints={waypoints}
+        currentWaypointIndex={currentWaypointIndex}
+        setCurrentWaypointIndex={setCurrentWaypointIndex}
+        mouseControlEnabled={mouseControlEnabled}
+        setMouseControlEnabled={setMouseControlEnabled}
+        setWaypoints={setWaypoints}
+        singleWaypoint={singleWaypoint}
+        handleDriveMode={handleDriveMode}
+        fixedCameraRotation={fixedCameraRotation}
+        onManualButton={handleManualMode}
+      />
     </div>
   );
 }

@@ -15,7 +15,6 @@ import PCSetup from './props/PCSetup';
 import Server from './props/Server';
 import CityProp from './props/CityProp';
 import WaypointMarker from '../ui/WaypointMarker';
-import ManualButton from '../common/ManualButton';
 import * as THREE from 'three';
 import { WAYPOINT_THRESHOLD } from '../../utils/trackData';
 
@@ -53,100 +52,85 @@ const ThreeDScene: React.FC<ThreeDSceneProps> = ({
   onManualButton,
 }) => {
   return (
-    <div className="relative w-full aspect-[16/9] max-w-3xl mx-auto rounded-lg overflow-hidden shadow-lg">
-      {/* Creative background gradient behind canvas */}
-      <div className="absolute inset-0 z-0" style={{background: 'linear-gradient(135deg,rgb(20, 135, 184) 0%,rgb(48, 154, 224) 20%, #74c0fc 40%,rgb(228, 197, 151) 60%, #ff5e3a 100%)'}} />
-      {/* Overlay: Manual Button */}
-      <div className="absolute top-4 left-4 z-10">
-        <ManualButton onClick={onManualButton} />
-      </div>
-      {/* Overlay: Coordinate Tracker */}
-      <div className="absolute top-4 right-4 z-10 bg-black bg-opacity-60 text-white p-4 rounded-lg text-sm font-mono shadow-md min-w-[140px]">
-        <h3 className="font-bold mb-2">Waypoint</h3>
-        <p>X: {singleWaypoint.x.toFixed(2)}</p>
-        <p>Y: {singleWaypoint.y.toFixed(2)}</p>
-        <p>Z: {singleWaypoint.z.toFixed(2)}</p>
-      </div>
-      <Canvas
-        className="relative z-10"
-        shadows
-        camera={{
-          fov: 75,
-          near: 0.1,
-          far: 1000,
-        }}
-        gl={{
-          antialias: true,
-          alpha: true,
-          powerPreference: 'high-performance',
-        }}
-      >
-        <Environment preset="sunset" />
-        <Physics gravity={[0, -9.82, 0]}>
-          <Floor />
-          <Track />
-          <Car
-            fixedCameraRotation={fixedCameraRotation}
-            cameraOffset={cameraOffset}
-            isManualModeEnabled={drivingMode === 'manual'}
-            autonomousPath={waypoints}
-            currentWaypointIndex={currentWaypointIndex}
-            setCurrentWaypointIndex={setCurrentWaypointIndex}
-            WAYPOINT_THRESHOLD={WAYPOINT_THRESHOLD}
-            mouseControlEnabled={mouseControlEnabled}
-          />
-          <RainbowButton
-            position={buttonPosition2}
-            text="Drive"
-            onClick={handleDriveMode}
-          />
-          <Walls />
-          <CityArch />
-          <CityNameBoard name="SARRAN" position={[-15, 0, 10]} />
-          <WaypointMarker
-            position={singleWaypoint}
-            isCurrent={true}
-            threshold={WAYPOINT_THRESHOLD}
-            index={0}
-            onMove={() => {}}
-          />
-          <Statue position={[-40, 0, 15]} scale={[3,3,3]} />
-          <Mailbox position={[10, 0, 10]} scale={1.5} />
-          <PCSetup position={[90, -24, 230]} scale={[20,20,20]} />
-          <Server position={[-40, 0, 15]} scale={[3,3,3]} />
-          <CityProp 
-            modelPath="/models/environment/carprobs.glb"
-            position={[20, 0, 20]} 
-            scale={[1.5, 1.5, 1.5]} 
-          />
-        </Physics>
-        <ambientLight intensity={0.6} color="#ff9d4d" />
-        <directionalLight
-          position={[10, 10, 10]}
-          intensity={1.2}
-          color="#ff9d4d"
-          castShadow
+    <Canvas
+      shadows
+      camera={{
+        fov: 75,
+        near: 0.1,
+        far: 1000,
+      }}
+      gl={{
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance',
+      }}
+      className="w-full h-full"
+    >
+      <Environment preset="sunset" />
+      <Physics gravity={[0, -9.82, 0]}>
+        <Floor />
+        <Track />
+        <Car
+          fixedCameraRotation={fixedCameraRotation}
+          cameraOffset={cameraOffset}
+          isManualModeEnabled={drivingMode === 'manual'}
+          autonomousPath={waypoints}
+          currentWaypointIndex={currentWaypointIndex}
+          setCurrentWaypointIndex={setCurrentWaypointIndex}
+          WAYPOINT_THRESHOLD={WAYPOINT_THRESHOLD}
+          mouseControlEnabled={mouseControlEnabled}
         />
-        <pointLight
-          position={[-10, 10, -10]}
-          intensity={0.8}
-          color="#ff6b35"
+        <RainbowButton
+          position={buttonPosition2}
+          text="Drive"
+          onClick={handleDriveMode}
         />
-        <pointLight
-          position={[0, 15, 0]}
-          intensity={0.5}
-          color="#ff9d4d"
+        <Walls />
+        <CityArch />
+        <CityNameBoard name="SARRAN" position={[-15, 0, 10]} />
+        <WaypointMarker
+          position={singleWaypoint}
+          isCurrent={true}
+          threshold={WAYPOINT_THRESHOLD}
+          index={0}
+          onMove={() => {}}
         />
-        {mouseControlEnabled && (
-          <OrbitControls 
-            enableDamping 
-            enablePan 
-            enableZoom 
-            enabled={true}
-          />
-        )}
-      </Canvas>
-    </div>
+        <Statue position={[-40, 0, 15]} scale={[3,3,3]} />
+        <Mailbox position={[10, 0, 10]} scale={1.5} />
+        <PCSetup position={[90, -24, 230]} scale={[20,20,20]} />
+        <Server position={[-40, 0, 15]} scale={[3,3,3]} />
+        <CityProp 
+          modelPath="/models/environment/carprobs.glb"
+          position={[20, 0, 20]} 
+          scale={[1.5, 1.5, 1.5]} 
+        />
+      </Physics>
+      <ambientLight intensity={0.6} color="#ff9d4d" />
+      <directionalLight
+        position={[10, 10, 10]}
+        intensity={1.2}
+        color="#ff9d4d"
+        castShadow
+      />
+      <pointLight
+        position={[-10, 10, -10]}
+        intensity={0.8}
+        color="#ff6b35"
+      />
+      <pointLight
+        position={[0, 15, 0]}
+        intensity={0.5}
+        color="#ff9d4d"
+      />
+      {mouseControlEnabled && (
+        <OrbitControls 
+          enableDamping 
+          enablePan 
+          enableZoom 
+          enabled={true}
+        />
+      )}
+    </Canvas>
   );
 };
 
