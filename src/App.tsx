@@ -61,13 +61,13 @@ function App() {
       } else if (event.key === 'M' || event.key === 'm') {
         setMouseControlEnabled(!mouseControlEnabled);
         console.log('Mouse camera control:', !mouseControlEnabled ? 'enabled' : 'disabled');
-      } else if (event.key === 'ArrowLeft') {
+      } else if (event.key === 'a' || event.key === 'A') {
         setSingleWaypoint(prev => new THREE.Vector3(prev.x - waypointMoveDistance, prev.y, prev.z));
-      } else if (event.key === 'ArrowRight') {
+      } else if (event.key === 'd' || event.key === 'D') {
         setSingleWaypoint(prev => new THREE.Vector3(prev.x + waypointMoveDistance, prev.y, prev.z));
-      } else if (event.key === 'ArrowUp') {
+      } else if (event.key === 'w' || event.key === 'W') {
         setSingleWaypoint(prev => new THREE.Vector3(prev.x, prev.y, prev.z - waypointMoveDistance));
-      } else if (event.key === 'ArrowDown') {
+      } else if (event.key === 's' || event.key === 'S') {
         setSingleWaypoint(prev => new THREE.Vector3(prev.x, prev.y, prev.z + waypointMoveDistance));
       }
     };
