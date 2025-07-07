@@ -5,8 +5,15 @@ import { baseAutonomousPath, WAYPOINT_THRESHOLD } from './utils/trackData';
 import * as THREE from 'three';
 import { useAppStore } from './state/appStore';
 import ManualButton from './components/common/ManualButton';
+import CheckpointMarkers from './components/3d/props/CheckpointMarkers';
 
 const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
+
+const checkpointPositions = [
+  [-40, 0, 15], // Statue and Server
+  [90, -24, 230], // PCSetup
+  [10, 0, 10], // Mailbox
+];
 
 function App() {
   const {
@@ -93,7 +100,7 @@ function App() {
       if (e.type === 'gesturestart' || e.type === 'gesturechange') {
         e.preventDefault();
         e.stopPropagation();
-        return false;
+        return false;adfknadsvje
       }
     };
     window.addEventListener('wheel', preventZoom, { passive: false });
@@ -149,6 +156,7 @@ function App() {
         handleDriveMode={handleDriveMode}
         fixedCameraRotation={fixedCameraRotation}
         onManualButton={handleManualMode}
+        checkpointPositions={checkpointPositions}
       />
     </div>
   );
