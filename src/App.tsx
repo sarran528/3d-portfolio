@@ -100,7 +100,7 @@ function App() {
       if (e.type === 'gesturestart' || e.type === 'gesturechange') {
         e.preventDefault();
         e.stopPropagation();
-        return false;adfknadsvje
+        return false;
       }
     };
     window.addEventListener('wheel', preventZoom, { passive: false });
