@@ -100,7 +100,7 @@ function App() {
       if (e.type === 'gesturestart' || e.type === 'gesturechange') {
         e.preventDefault();
         e.stopPropagation();
-        return false;
+        return false;adfknadsvje
       }
     };
     window.addEventListener('wheel', preventZoom, { passive: false });
@@ -164,3 +164,4 @@ function App() {
 
 export default React.memo(App);
 
+//car controlls
