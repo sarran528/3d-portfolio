@@ -164,4 +164,4 @@ function App() {
 
 export default React.memo(App);
 
-//svokvf vrersv mfmvierm
+//svokvf vrersv
