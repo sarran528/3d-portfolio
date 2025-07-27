@@ -33,7 +33,7 @@ interface ThreeDSceneProps {
   fixedCameraRotation: THREE.Euler;
   onManualButton: () => void;
 }
-ll,','l
+
 const buttonPosition2 = [30, 0.5, -10] as [number, number, number];
 
 const ThreeDScene: React.FC<ThreeDSceneProps> = ({
