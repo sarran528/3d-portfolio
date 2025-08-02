@@ -135,5 +135,3 @@ const ThreeDScene: React.FC<ThreeDSceneProps> = ({
 };
 
 export default ThreeDScene; 
-
-//sdkjj
