@@ -77,7 +77,7 @@ const WaypointMarker: React.FC<WaypointMarkerProps> = ({
           <meshStandardMaterial
             color={isCurrent ? '#ff4444' : '#4444ff'}
             transparent
-            opacity={0.6}
+            opacity={0.4}
             emissive={isCurrent ? '#ff0000' : '#0000ff'}
             emissiveIntensity={0.2}
           />
