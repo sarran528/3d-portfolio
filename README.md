@@ -1,7 +1,6 @@
 # 3D Portfolio Showcase
 
-A modern 3D portfolio built with React Three Fiber, featuring an interactive driving experience with autonomous and manual modes.
-
+A modern 3D portfolio built with React Three Fiber, featuring an interactive driving experience with autonomous and manual model.
 ## 🏗️ Project Structure
 
 ```
