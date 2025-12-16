@@ -1,6 +1,6 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Physics } from '@react-three/cannon';
+import { Physics, useBox } from '@react-three/cannon';
 import { Environment, OrbitControls } from '@react-three/drei';
 import Track from './environment/Track';
 import Floor from './environment/Floor';
@@ -36,6 +36,26 @@ interface ThreeDSceneProps {
 
 const buttonPosition2 = [30, 0.5, -10] as [number, number, number];
 
+// Static obstacle with a physics collider and visual mesh
+const Obstacle: React.FC<{ position: [number, number, number]; size: [number, number, number]; color?: string }> = ({ position, size, color = '#00bb00' }) => {
+  // react-three/cannon expects box "args" as half-extents (x/2, y/2, z/2).
+  const halfArgs: [number, number, number] = [size[0] / 2, size[1] / 2, size[2] / 2];
+  const [ref] = useBox(() => ({
+    mass: 0,
+    args: halfArgs,
+    position,
+    type: 'Static',
+    material: { friction: 1.0, restitution: 0 },
+  }));
+
+  return (
+    <mesh ref={ref as any} position={position} castShadow receiveShadow>
+      <boxGeometry args={size} />
+      <meshStandardMaterial color={color} opacity={0.6} transparent />
+    </mesh>
+  );
+};
+
 const ThreeDScene: React.FC<ThreeDSceneProps> = ({
   drivingMode,
   setDrivingMode,
@@ -51,6 +71,12 @@ const ThreeDScene: React.FC<ThreeDSceneProps> = ({
   fixedCameraRotation,
   onManualButton,
 }) => {
+  // Single test obstacle (center position and full size [w,h,d]).
+  // Y is the center height (size[1] / 2) so box sits on the ground.
+  const obstacles = [
+    { position: [-10, 0.9, 0.00] as [number, number, number], size: [2, 2, 2] as [number, number, number] },
+     { position: [10, 0.9, 0.00] as [number, number, number], size: [2, 2, 2] as [number, number, number] },
+  ];
   return (
     <Canvas
       shadows
@@ -70,6 +96,11 @@ const ThreeDScene: React.FC<ThreeDSceneProps> = ({
       <Physics gravity={[0, -9.82, 0]}>
         <Floor />
         <Track />
+        {/* render obstacles as static physics colliders + visuals */}
+        {obstacles.map((o, i) => (
+          <Obstacle key={`obstacle-${i}`} position={o.position} size={o.size} />
+        ))}
+
         <Car
           fixedCameraRotation={fixedCameraRotation}
           cameraOffset={cameraOffset}
@@ -79,6 +110,7 @@ const ThreeDScene: React.FC<ThreeDSceneProps> = ({
           setCurrentWaypointIndex={setCurrentWaypointIndex}
           WAYPOINT_THRESHOLD={WAYPOINT_THRESHOLD}
           mouseControlEnabled={mouseControlEnabled}
+          obstacles={obstacles}
         />
         <RainbowButton
           position={buttonPosition2}

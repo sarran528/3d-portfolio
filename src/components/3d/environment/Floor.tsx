@@ -1,21 +1,11 @@
 import React from 'react';
-import { useBox } from '@react-three/cannon';
-import * as THREE from 'three';
 
 const Floor: React.FC = () => {
-  const [ref] = useBox(() => ({
-    mass: 0, // Static object
-    position: [0, -0.5, 0], // Slightly below ground level
-    args: [100, 1, 100], // Much larger floor
-    material: {
-      friction: 1.0, // High friction
-      restitution: 0.0, // No bounce
-    },
-    type: 'Static',
-  }));
-
+  // Physics body removed: the car is currently moved via code
+  // and the scene already relies on manual collision handling.
+  // Keep the visible floor mesh only to preserve visuals.
   return (
-    <mesh ref={ref as any} receiveShadow>
+    <mesh position={[0, -0.5, 0]} receiveShadow>
       <boxGeometry args={[150, 1, 80]} />
       <meshStandardMaterial 
         color="#303030"
@@ -26,4 +16,4 @@ const Floor: React.FC = () => {
   );
 };
 
-export default Floor; 
+export default Floor;

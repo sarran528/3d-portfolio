@@ -19,6 +19,7 @@ interface CarProps {
   setCurrentWaypointIndex: React.Dispatch<React.SetStateAction<number>>;
   WAYPOINT_THRESHOLD: number;
   mouseControlEnabled: boolean;
+  obstacles?: { position: [number, number, number]; size: [number, number, number] }[];
 }
 
 const Car: React.FC<CarProps> = ({
@@ -30,6 +31,7 @@ const Car: React.FC<CarProps> = ({
   setCurrentWaypointIndex,
   WAYPOINT_THRESHOLD,
   mouseControlEnabled
+  , obstacles = []
 }) => {
   const { scene } = useGLTF('/models/vehicles/car.glb');
   const carRef = useRef<THREE.Group>(null);
@@ -50,6 +52,11 @@ const Car: React.FC<CarProps> = ({
 
   // Use a ref to track the previous state of isManualModeEnabled
   const prevIsManualModeEnabledRef = useRef(isManualModeEnabled);
+  const carHalfSizeRef = useRef(new THREE.Vector3(2.5, 1.0, 5)); // fallback half-extents
+  const [helperReady, setHelperReady] = useState(false);
+  const carBBoxCenterRef = useRef(new THREE.Vector3(0, 0, 0));
+  const helperBoxRef = useRef<THREE.Mesh>(null);
+  const helperCircleRef = useRef<THREE.Mesh>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -191,16 +198,68 @@ const Car: React.FC<CarProps> = ({
     }
 
     // Wall collision detection and response
-    const carHalfWidth = 2.5; // Adjust based on your car model's scale
-    const carHalfLength = 5; // Adjust based on your car model's scale
-
     const WALL_MIN_X = -75;
     const WALL_MAX_X = 75;
     const WALL_MIN_Z = -40;
     const WALL_MAX_Z = 40;
 
-    car.position.x = Math.max(WALL_MIN_X + carHalfWidth, Math.min(WALL_MAX_X - carHalfWidth, car.position.x));
-    car.position.z = Math.max(WALL_MIN_Z + carHalfLength, Math.min(WALL_MAX_Z - carHalfLength, car.position.z));
+    // Circle-based collision on XZ plane (rotation-invariant)
+    const half = carHalfSizeRef.current;
+    const localCenter = carBBoxCenterRef.current.clone();
+    const worldCenter = carRef.current.localToWorld(localCenter.clone());
+
+    // use a flat radius from bbox (max of half-width and half-length) and add small padding
+    const padding = 0.05;
+    const carRadius = Math.max(half.x, half.z) + padding;
+
+    for (const obs of obstacles) {
+      const obsPos = new THREE.Vector3(obs.position[0], obs.position[1], obs.position[2]);
+      const obsHalfX = obs.size[0] / 2;
+      const obsHalfZ = obs.size[2] / 2;
+
+      // approximate obstacle by its XZ extents as a rectangle; compute closest point on obs to car center
+      const dx = Math.max(Math.abs(worldCenter.x - obsPos.x) - obsHalfX, 0);
+      const dz = Math.max(Math.abs(worldCenter.z - obsPos.z) - obsHalfZ, 0);
+      const distance = Math.sqrt(dx * dx + dz * dz);
+
+      const combinedRadius = carRadius; // obstacle treated as rectangle; distance already accounts for obs size
+
+      if (distance < combinedRadius) {
+        // penetration depth
+        const penetration = combinedRadius - distance;
+
+        // compute push direction (from obstacle toward car) on XZ
+        let pushDir = new THREE.Vector3(worldCenter.x - obsPos.x, 0, worldCenter.z - obsPos.z);
+        if (pushDir.lengthSq() === 0) {
+          // arbitrary direction if centers coincide
+          pushDir.set(1, 0, 0);
+        }
+        pushDir.normalize();
+
+        // apply world-space delta to car.position
+        car.position.x += pushDir.x * penetration;
+        car.position.z += pushDir.z * penetration;
+      }
+    }
+
+    // Keep the car within world bounds
+    car.position.x = Math.max(WALL_MIN_X + half.x, Math.min(WALL_MAX_X - half.x, car.position.x));
+    car.position.z = Math.max(WALL_MIN_Z + half.z, Math.min(WALL_MAX_Z - half.z, car.position.z));
+
+    // Update helper visuals to match computed local center
+    if (helperReady) {
+      if (helperBoxRef.current) {
+        helperBoxRef.current.position.copy(carBBoxCenterRef.current);
+      }
+      if (helperCircleRef.current) {
+        // place circle slightly below the bbox center toward the bottom of the bbox
+        helperCircleRef.current.position.set(
+          carBBoxCenterRef.current.x,
+          carBBoxCenterRef.current.y - half.y + 0.01,
+          carBBoxCenterRef.current.z
+        );
+      }
+    }
   });
 
   useEffect(() => {
@@ -227,13 +286,43 @@ const Car: React.FC<CarProps> = ({
       });
 
       carRef.current.add(scene.clone());
+
+      // compute bounding box for car to determine half-extents
+      try {
+        const cloned = scene.clone(true);
+        cloned.scale.set(150, 150, 150);
+        const bbox = new THREE.Box3().setFromObject(cloned);
+        const size = new THREE.Vector3();
+        const center = new THREE.Vector3();
+        bbox.getSize(size);
+        bbox.getCenter(center);
+        carHalfSizeRef.current.set(size.x / 2, size.y / 2, size.z / 2);
+        carBBoxCenterRef.current.copy(center);
+        setHelperReady(true);
+      } catch (err) {
+        // fallback keeps default half-extents
+        console.warn('Could not compute car bbox, using fallback extents', err);
+      }
     }
   }, [scene]);
 
   return (
     <group ref={carRef}>
       {/* Example car size: width 2, height 1, length 4 */}
-      
+      {/* Collision helper visuals: wireframe AABB and ground circle */}
+      {helperReady && (
+        <>
+          <mesh ref={helperBoxRef as any}>
+            <boxGeometry args={[carHalfSizeRef.current.x * 2, carHalfSizeRef.current.y * 2, carHalfSizeRef.current.z * 2]} />
+            <meshBasicMaterial color="#ffcc00" wireframe opacity={0.9} transparent />
+          </mesh>
+
+          <mesh ref={helperCircleRef as any} rotation={[-Math.PI / 2, 0, 0]}>
+            <circleGeometry args={[Math.max(carHalfSizeRef.current.x, carHalfSizeRef.current.z) + 0.1, 32]} />
+            <meshBasicMaterial color="#00ff88" opacity={0.6} transparent />
+          </mesh>
+        </>
+      )}
     </group>
   );
 };
