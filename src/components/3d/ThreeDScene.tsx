@@ -74,8 +74,10 @@ const ThreeDScene: React.FC<ThreeDSceneProps> = ({
   // Single test obstacle (center position and full size [w,h,d]).
   // Y is the center height (size[1] / 2) so box sits on the ground.
   const obstacles = [
-    { position: [-10, 0.9, 0.00] as [number, number, number], size: [2, 2, 2] as [number, number, number] },
-     { position: [10, 0.9, 0.00] as [number, number, number], size: [2, 2, 2] as [number, number, number] },
+    { position: [5, 2, 10] as [number, number, number], size: [8, 4, 8] as [number, number, number] },
+    { position: [-15, 2, 20] as [number, number, number], size: [8, 4, 8] as [number, number, number] },
+    { position: [30, 2, -10] as [number, number, number], size: [8, 4, 8] as [number, number, number] },
+    { position: [-30, 2, 40] as [number, number, number], size: [8, 4, 8] as [number, number, number] },
   ];
   return (
     <Canvas
