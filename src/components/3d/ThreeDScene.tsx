@@ -32,6 +32,7 @@ interface ThreeDSceneProps {
   handleDriveMode: () => void;
   fixedCameraRotation: THREE.Euler;
   onManualButton: () => void;
+  refreshGreenKey?: number;
 }
 
 const buttonPosition2 = [30, 0.5, -10] as [number, number, number];
@@ -70,14 +71,18 @@ const ThreeDScene: React.FC<ThreeDSceneProps> = ({
   handleDriveMode,
   fixedCameraRotation,
   onManualButton,
+  refreshGreenKey = 0,
 }) => {
   const obstacles = [
     { position: [-10, 0.9, 0.00] as [number, number, number], size: [2, 2, 2] as [number, number, number] },
     { position: [10, 0.9, 0.00] as [number, number, number], size: [2, 2, 2] as [number, number, number] },
-    { position: [-40, 2, -30] as [number, number, number], size: [30, 4, 8] as [number, number, number] },
-    { position: [-15, 2, 20] as [number, number, number], size: [8, 4, 8] as [number, number, number] },
-    { position: [30, 2, -10] as [number, number, number], size: [8, 4, 8] as [number, number, number] },
-    { position: [-30, 2, 40] as [number, number, number], size: [8, 4, 8] as [number, number, number] },
+    // server
+    { position: [-65.4, 1, -7] as [number, number, number], size: [5, 2, 20] as [number, number, number] }, 
+    { position: [2,2,7] as [number, number, number], size: [5, 2, 20] as [number, number, number] },
+    // pc setups
+    { position: [-50, 1, -27] as [number, number, number], size: [9, 2, 1] as [number, number, number] },
+    { position: [-29, 1, -27] as [number, number, number], size: [9, 2, 1] as [number, number, number] },
+    { position: [-39.7, 1, -32] as [number, number, number], size: [32, 2, 8] as [number, number, number] },
   ];
   return (
     <Canvas
@@ -96,12 +101,21 @@ const ThreeDScene: React.FC<ThreeDSceneProps> = ({
     >
       <Environment preset="sunset" />
       <Physics gravity={[0, -9.82, 0]}>
-        <Floor />
-        <Track />
-        {/* render obstacles as static physics colliders + visuals */}
-        {obstacles.map((o, i) => (
-          <Obstacle key={`obstacle-${i}`} position={o.position} size={o.size} />
-        ))}
+        <Debug color="black" scale={1.01}>
+          <Floor />
+          <Track />
+          {/* render obstacles as static physics colliders + visuals */}
+          {obstacles.map((o, i) => (
+            // include refreshGreenKey in the key so green obstacles remount when it changes
+            // pass optional rotation from obstacle entries so physics + mesh get rotated
+            <Obstacle
+              key={`obstacle-${i}-${refreshGreenKey}`}
+              position={o.position}
+              size={o.size}
+              rotation={(o as any).rotation}
+            />
+          ))}
+        </Debug>
 
         <Car
           fixedCameraRotation={fixedCameraRotation}

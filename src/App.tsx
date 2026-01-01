@@ -6,6 +6,7 @@ import { baseAutonomousPath, WAYPOINT_THRESHOLD } from './utils/trackData';
 import * as THREE from 'three';
 import { useAppStore } from './state/appStore';
 import ManualButton from './components/common/ManualButton';
+import RefreshGreenButton from './components/common/RefreshGreenButton';
 import CheckpointMarkers from './components/3d/props/CheckpointMarkers';
 
 const initialAutonomousPathInterpolated = interpolatePath(baseAutonomousPath, 1);
@@ -31,6 +32,7 @@ function App() {
 
   const [waypoints, setLocalWaypoints] = useState<THREE.Vector3[]>(initialAutonomousPathInterpolated);
   const [singleWaypoint, setSingleWaypoint] = useState<THREE.Vector3>(new THREE.Vector3(0, 0.1, 0));
+  const [refreshGreenKey, setRefreshGreenKey] = useState<number>(0);
 
   useEffect(() => {
     setWaypoints(waypoints);
@@ -136,6 +138,7 @@ function App() {
       zIndex: -1,
     }}>
       <ManualButton onClick={handleManualMode} />
+      <RefreshGreenButton onClick={() => setRefreshGreenKey(k => k + 1)} />
       {/* Coordinate Tracker */}
       <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-3 rounded-lg text-sm font-mono">
         <h3 className="font-bold mb-2">Waypoint Coordinates</h3>
@@ -157,6 +160,7 @@ function App() {
         handleDriveMode={handleDriveMode}
         fixedCameraRotation={fixedCameraRotation}
         onManualButton={handleManualMode}
+        refreshGreenKey={refreshGreenKey}
         checkpointPositions={checkpointPositions}
       />
     </div>
