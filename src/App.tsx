@@ -1,4 +1,4 @@
-
+.
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import ThreeDScene from './components/3d/ThreeDScene';
 import { interpolatePath } from './utils/interpolatePath';
