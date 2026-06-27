@@ -1,6 +1,6 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Physics, useBox } from '@react-three/cannon';
+import { Physics, useBox, Debug } from '@react-three/cannon';
 import { Environment, OrbitControls } from '@react-three/drei';
 import Track from './environment/Track';
 import Floor from './environment/Floor';
@@ -38,19 +38,20 @@ interface ThreeDSceneProps {
 const buttonPosition2 = [30, 0.5, -10] as [number, number, number];
 
 // Static obstacle with a physics collider and visual mesh
-const Obstacle: React.FC<{ position: [number, number, number]; size: [number, number, number]; color?: string }> = ({ position, size, color = '#00bb00' }) => {
+const Obstacle: React.FC<{ position: [number, number, number]; size: [number, number, number]; color?: string; rotation?: [number, number, number] | THREE.Euler }> = ({ position, size, color = '#00bb00', rotation }) => {
   // react-three/cannon expects box "args" as half-extents (x/2, y/2, z/2).
   const halfArgs: [number, number, number] = [size[0] / 2, size[1] / 2, size[2] / 2];
   const [ref] = useBox(() => ({
     mass: 0,
     args: halfArgs,
     position,
+    rotation: rotation as any,
     type: 'Static',
     material: { friction: 1.0, restitution: 0 },
   }));
 
   return (
-    <mesh ref={ref as any} position={position} castShadow receiveShadow>
+    <mesh ref={ref as any} position={position} rotation={rotation as any} castShadow receiveShadow>
       <boxGeometry args={size} />
       <meshStandardMaterial color={color} opacity={0.6} transparent />
     </mesh>
